@@ -566,3 +566,40 @@ canvas#waveform {
   border-color: var(--accent-cyan);
   background: rgba(0, 240, 255, 0.08);
 }
+
+/* Export Section */
+.export-container {
+  display: flex;
+  gap: var(--sp-md);
+  margin-top: var(--sp-md);
+  padding-top: var(--sp-md);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.btn-export {
+  flex: 1;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-cyan);
+  border-radius: var(--rad-md);
+  padding: var(--sp-sm) var(--sp-md);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--dur-norm) var(--ease-def);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-sm);
+}
+
+.btn-export:hover {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-export:active {
+  transform: translateY(0);
+}

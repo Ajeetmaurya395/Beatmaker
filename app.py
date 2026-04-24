@@ -192,6 +192,76 @@ async def tweak_stem(bundle_id: str, req: StemTweakRequest):
 async def get_profile():
     return {"summary": engine.taste_profile.summary(), "raw": engine.taste_profile.profile}
 
+@app.get("/api/bundles/{bundle_id}/download/mix")
+async def download_mix(bundle_id: str):
+    mix_path = OUTPUT_DIR / bundle_id / "preview_mix.wav"
+    if not mix_path.exists():
+        raise HTTPException(status_code=404, detail="Mix file not found")
+    
+    manifest_path = OUTPUT_DIR / bundle_id / "project.json"
+    filename = bundle_id
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text())
+        prompt = manifest.get("spec", {}).get("prompt", "beat")
+        # Create a clean filename from the prompt
+        clean = "_".join(prompt.split()[:5]).replace("/", "-")
+        filename = f"{clean}_{manifest.get('spec', {}).get('bpm', 0)}bpm"
+    
+    return FileResponse(
+        mix_path,
+        media_type="audio/wav",
+        filename=f"{filename}.wav",
+    )
+
+@app.get("/api/bundles/{bundle_id}/download/stems")
+async def download_stems_zip(bundle_id: str):
+    import zipfile
+    import tempfile
+    
+    bundle_dir = OUTPUT_DIR / bundle_id
+    stems_dir = bundle_dir / "stems"
+    if not stems_dir.exists():
+        raise HTTPException(status_code=404, detail="Stems not found")
+    
+    manifest_path = bundle_dir / "project.json"
+    zip_name = bundle_id
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text())
+        prompt = manifest.get("spec", {}).get("prompt", "beat")
+        clean = "_".join(prompt.split()[:5]).replace("/", "-")
+        zip_name = f"{clean}_stems"
+    
+    # Create ZIP in temp location
+    zip_path = bundle_dir / f"{zip_name}.zip"
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        # Add all stem WAVs
+        for wav in stems_dir.glob("*.wav"):
+            zf.write(wav, f"stems/{wav.name}")
+        # Add the full mix
+        mix = bundle_dir / "preview_mix.wav"
+        if mix.exists():
+            zf.write(mix, "full_mix.wav")
+        # Add the project manifest
+        if manifest_path.exists():
+            zf.write(manifest_path, "project.json")
+    
+    return FileResponse(
+        zip_path,
+        media_type="application/zip",
+        filename=f"{zip_name}.zip",
+    )
+
+@app.get("/api/bundles/{bundle_id}/download/stem/{stem}")
+async def download_single_stem(bundle_id: str, stem: str):
+    stem_path = OUTPUT_DIR / bundle_id / "stems" / f"{stem}.wav"
+    if not stem_path.exists():
+        raise HTTPException(status_code=404, detail=f"Stem '{stem}' not found")
+    return FileResponse(
+        stem_path,
+        media_type="audio/wav",
+        filename=f"{stem}.wav",
+    )
+
 @app.post("/api/ingest")
 async def ingest_reference(file: UploadFile = File(...), tags: Optional[str] = Form(None)):
     if not file.filename.endswith(".wav"):

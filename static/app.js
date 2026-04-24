@@ -84,6 +84,10 @@ async function init() {
         els.btnHubDownload.addEventListener('click', handleHubDownload);
     }
 
+    // Export buttons
+    document.getElementById('btn-download-mix')?.addEventListener('click', downloadMix);
+    document.getElementById('btn-download-stems')?.addEventListener('click', downloadStemsZip);
+
     // Resize canvas
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
@@ -284,6 +288,7 @@ async function loadBundle(bundleId) {
                 <button class="stem-btn solo-btn" onclick="toggleSolo('${stem}')">S</button>
                 <input type="range" class="stem-vol" min="0" max="1" step="0.05" value="1" oninput="setGain('${stem}', this.value)">
                 <button class="stem-btn tweak-toggle" onclick="toggleTweakRow('${stem}')" title="Tweak this stem">✏️</button>
+                <button class="stem-btn" onclick="downloadStem('${stem}')" title="Download this stem">⬇</button>
             </div>
         </div>
         <div class="stem-tweak-row" id="tweak-row-${stem}" style="display: none;">
@@ -525,6 +530,22 @@ async function submitFeedback(rating) {
     } catch (e) {
         alert('Error saving feedback');
     }
+}
+
+// Export / Download
+function downloadMix() {
+    if (!currentBundle) return;
+    window.location.href = `${API_BASE}/bundles/${currentBundle}/download/mix`;
+}
+
+function downloadStemsZip() {
+    if (!currentBundle) return;
+    window.location.href = `${API_BASE}/bundles/${currentBundle}/download/stems`;
+}
+
+function downloadStem(stem) {
+    if (!currentBundle) return;
+    window.location.href = `${API_BASE}/bundles/${currentBundle}/download/stem/${stem}`;
 }
 
 // Stem Tweaking
