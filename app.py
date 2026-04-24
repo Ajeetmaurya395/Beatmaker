@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File, F
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Union
 import json
 from pathlib import Path
 import random
@@ -39,7 +39,7 @@ class GenerateRequest(BaseModel):
     reference_mode: str = "inspire"
     taste_strength: float = 0.35
     deterministic: bool = False
-    tags: Optional[list[str] | str] = None
+    tags: Optional[Union[List[str], str]] = None
 
 class RateRequest(BaseModel):
     feedback: str  # 'favorite', 'like', 'skip', 'dislike'
