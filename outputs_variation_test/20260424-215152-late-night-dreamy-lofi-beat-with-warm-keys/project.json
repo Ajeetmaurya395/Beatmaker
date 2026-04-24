@@ -1,0 +1,176 @@
+{
+  "spec": {
+    "prompt": "late night dreamy lofi beat with warm keys",
+    "genre": "lofi",
+    "bpm": 79,
+    "key_root": "G",
+    "scale": "minor",
+    "swing": 0.14,
+    "seed": 174067565,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.35
+      },
+      {
+        "name": "loop",
+        "bars": 8,
+        "energy": 0.55
+      },
+      {
+        "name": "variation",
+        "bars": 8,
+        "energy": 0.65
+      },
+      {
+        "name": "loop",
+        "bars": 8,
+        "energy": 0.58
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.3
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=9, active_genre=lofi, taste_strength=0.15, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.35
+    },
+    {
+      "name": "loop",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.55
+    },
+    {
+      "name": "variation",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.65
+    },
+    {
+      "name": "loop",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.58
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.3
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 86,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 82,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 133,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 64,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 114,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 243,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 85,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-24T21:52:35",
+  "render": {
+    "sample_pack": "lofi-174067565 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "lofi-174067565",
+    "sample_pack_path": "outputs_variation_test/_auto_packs/lofi-174067565",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=9, active_genre=lofi, taste_strength=0.15, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:4|loop:8|variation:8|loop:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,6": 1,
+        "0,12": 1,
+        "0,7": 1,
+        "0,10": 4,
+        "0,12,7": 4,
+        "0,10,6": 18,
+        "0,8": 2,
+        "10,6": 1
+      },
+      "snare": {
+        "12,4": 10,
+        "12,15,4": 18,
+        "11,4": 4
+      },
+      "hats": {
+        "0c,10o,12c,4c,8c": 5,
+        "0c,12c,4c,8c": 26,
+        "10c,14c,2c,6c": 1
+      },
+      "perc": {
+        "14,6": 32
+      },
+      "bass_808": {
+        "0.00/1.25,2.00/0.90": 2,
+        "0.00/1.25,1.50/0.50,2.00/0.90": 6,
+        "0.00/1.00,1.00/0.50,2.00/1.00": 1,
+        "0.00/1.25,2.00/0.90,3.25/0.50": 4,
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 14,
+        "0.00/1.00,1.00/0.50,2.00/1.00,3.00/0.75": 3,
+        "0.00/0.75,0.75/0.25,2.00/0.90,3.50/0.35": 1,
+        "0.00/0.75,0.75/0.25,2.00/0.90,2.75/0.25,3.50/0.35": 1
+      },
+      "chords": {
+        "0.00/3.80,0.00/3.80,0.00/3.80,1.50/3.80,1.50/3.80,1.50/3.80,3.00/3.80,3.00/3.80,3.00/3.80": 21,
+        "0.00/3.80,0.00/3.80,0.00/3.80": 4,
+        "0.00/3.80,0.00/3.80,0.00/3.80,2.00/3.80,2.00/3.80,2.00/3.80": 7
+      },
+      "lead": {
+        "0.00/0.75,1.50/0.75": 9,
+        "0.50/0.75,2.00/0.75": 2,
+        "0.00/0.75,1.50/0.75,3.00/0.75": 16,
+        "0.00/0.75,1.00/0.75,2.50/0.75": 2,
+        "0.50/0.75,2.00/0.75,3.25/0.75": 3
+      }
+    }
+  }
+}

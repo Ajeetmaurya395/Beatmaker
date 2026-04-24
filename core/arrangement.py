@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import random
 from dataclasses import dataclass
 
@@ -132,10 +133,10 @@ class ArrangementBuilder:
         pattern_hints: dict[str, list[int] | list[tuple[int, bool]]],
     ) -> None:
         base = bar_number * 4
-        kick_steps = list(pattern_hints.get("kick") or self._kick_pattern(spec.genre, energy, kick_rng, taste_profile))
-        snare_steps = list(pattern_hints.get("snare") or self._snare_pattern(spec.genre, energy, snare_rng, taste_profile))
-        hat_steps = list(pattern_hints.get("hats") or self._hat_pattern(spec.genre, energy, hats_rng, taste_profile))
-        perc_steps = list(pattern_hints.get("perc") or self._perc_pattern(spec.genre, energy, perc_rng, taste_profile))
+        kick_steps = list(pattern_hints.get("kick") or self._kick_pattern(spec, energy, kick_rng, taste_profile))
+        snare_steps = list(pattern_hints.get("snare") or self._snare_pattern(spec, energy, snare_rng, taste_profile))
+        hat_steps = list(pattern_hints.get("hats") or self._hat_pattern(spec, energy, hats_rng, taste_profile))
+        perc_steps = list(pattern_hints.get("perc") or self._perc_pattern(spec, energy, perc_rng, taste_profile))
 
         kick_steps = self._mutate_steps(kick_steps, energy, kick_rng)
         snare_steps = self._mutate_steps(snare_steps, energy, snare_rng, keep_backbeat=True)
@@ -209,8 +210,14 @@ class ArrangementBuilder:
                     (2.0, 0.5, root),
                     (2.75, 0.75, fifth),
                 ],
+                [
+                    (0.0, 0.5, root),
+                    (1.5, 0.5, fifth),
+                    (2.0, 0.5, root),
+                    (3.5, 0.35, fifth),
+                ],
             ]
-            pattern = rng.choice(patterns)
+            pattern = self._prompt_pick(spec, "bass_808", patterns, rng)
         elif spec.genre in {"hindi_indie"}:
             patterns = [
                 [
@@ -222,8 +229,13 @@ class ArrangementBuilder:
                     (1.75, 0.6, fifth),
                     (3.0, 0.7, root),
                 ],
+                [
+                    (0.0, 0.9, root),
+                    (1.25, 0.5, fifth),
+                    (2.5, 1.0, root),
+                ],
             ]
-            pattern = rng.choice(patterns)
+            pattern = self._prompt_pick(spec, "bass_808", patterns, rng)
         else:
             patterns = [
                 [
@@ -253,7 +265,16 @@ class ArrangementBuilder:
                             (3.0, 0.75, fifth),
                         ]
                     )
-            pattern = rng.choice(patterns)
+                patterns.append(
+                    [
+                        (0.0, 0.75, root),
+                        (0.75, 0.25, fifth),
+                        (2.0, 0.9, root),
+                        (2.75, 0.25, fifth),
+                        (3.5, 0.35, root),
+                    ]
+                )
+            pattern = self._prompt_pick(spec, "bass_808", patterns, rng)
         for start, duration, pitch in pattern:
             if energy < 0.45 and start > 2.5:
                 continue
@@ -288,16 +309,24 @@ class ArrangementBuilder:
             moved = chord.pop(0)
             chord.append(moved + 12)
         if spec.genre == "house":
-            starts = rng.choice([(0.0, 2.0), (0.0, 1.5, 3.0)])
+            starts = self._prompt_pick(spec, "chords", [(0.0, 2.0), (0.0, 1.5, 3.0), (0.0, 1.0, 2.0, 3.0)], rng)
             duration = 1.75
         elif spec.genre == "hindi_indie":
-            starts = rng.choice([(0.0,), (0.0, 2.0)])
-            duration = 3.9 if energy < 0.6 else 3.2
+            # Add more variety for acoustic strumming/plucking
+            patterns = [
+                (0.0,),                          # Basic whole note
+                (0.0, 2.0),                      # Half notes
+                (0.0, 0.5, 1.0, 1.5, 2.0, 2.5),  # 8th note strum feel
+                (0.0, 1.5, 2.5),                 # Syncopated indie pluck
+                (0.5, 1.0, 2.5, 3.0),            # Off-beat motion
+            ]
+            starts = self._prompt_pick(spec, "chords", patterns, rng)
+            duration = 1.8 if len(starts) > 2 else 3.8 if energy < 0.6 else 3.2
         elif spec.genre == "lofi":
-            starts = rng.choice([(0.0,), (0.0, 2.0)])
+            starts = self._prompt_pick(spec, "chords", [(0.0,), (0.0, 2.0), (0.0, 1.5, 3.0)], rng)
             duration = 3.8
         else:
-            starts = rng.choice([(0.0,), (0.0, 2.0)])
+            starts = self._prompt_pick(spec, "chords", [(0.0,), (0.0, 2.0), (0.0, 1.5, 3.0)], rng)
             duration = 3.5 if energy < 0.8 else 2.75
 
         for start in starts:
@@ -328,15 +357,16 @@ class ArrangementBuilder:
 
         base = bar_number * 4
         scale_pool = [self._scale_note(spec, chord_degree + offset, octave=5) for offset in (0, 2, 4, 6)]
-        rhythm = {
-            "trap": [0.5, 1.25, 2.0, 3.0],
-            "drill": [0.75, 1.5, 2.5, 3.25],
-            "boom_bap": [1.0, 2.25, 3.0],
-            "lofi": [0.0, 1.5, 3.0],
-            "hindi_indie": [0.0, 1.75, 3.25],
-            "phonk": [0.25, 1.0, 2.0, 2.75, 3.5],
-            "house": [0.0, 0.75, 1.5, 2.25, 3.0],
-        }.get(spec.genre, [0.5, 1.5, 2.5, 3.0])
+        rhythm_map = {
+            "trap": ([0.5, 1.25, 2.0, 3.0], [0.25, 1.0, 2.25, 3.25], [0.75, 1.5, 2.0, 2.75]),
+            "drill": ([0.75, 1.5, 2.5, 3.25], [0.5, 1.25, 2.0, 3.5], [0.25, 1.75, 2.5, 3.0]),
+            "boom_bap": ([1.0, 2.25, 3.0], [0.5, 1.75, 3.25], [0.0, 1.5, 2.75]),
+            "lofi": ([0.0, 1.5, 3.0], [0.5, 2.0, 3.25], [0.0, 1.0, 2.5]),
+            "hindi_indie": ([0.0, 1.75, 3.25], [0.5, 2.0, 3.0], [0.0, 1.25, 2.75]),
+            "phonk": ([0.25, 1.0, 2.0, 2.75, 3.5], [0.5, 1.5, 2.25, 3.0], [0.0, 0.75, 2.0, 3.25]),
+            "house": ([0.0, 0.75, 1.5, 2.25, 3.0], [0.0, 1.0, 2.0, 3.0], [0.5, 1.5, 2.5, 3.5]),
+        }
+        rhythm = list(self._prompt_pick(spec, "lead", rhythm_map.get(spec.genre, ([0.5, 1.5, 2.5, 3.0],)), rng))
 
         for idx, start in enumerate(rhythm):
             if idx > 1 and energy < 0.6 and rng.random() < 0.4:
@@ -360,23 +390,25 @@ class ArrangementBuilder:
 
     def _kick_pattern(
         self,
-        genre: str,
+        spec: BeatSpec,
         energy: float,
         rng: random.Random,
         taste_profile: TasteProfileManager | None,
     ) -> list[int]:
+        genre = spec.genre
         learned = self._drum_pattern_from_profile("kick", genre, rng, taste_profile)
         if learned:
             return self._mutate_steps(learned, energy, rng)
-        base = {
-            "trap": [0, 7, 10, 12],
-            "drill": [0, 6, 9, 12],
-            "boom_bap": [0, 5, 8, 11],
-            "lofi": [0, 6, 10],
-            "hindi_indie": [0, 10],
-            "phonk": [0, 4, 8, 10, 12],
-            "house": [0, 4, 8, 12],
-        }.get(genre, [0, 7, 10, 12])
+        families = {
+            "trap": ([0, 7, 10, 12], [0, 6, 10, 13], [0, 8, 11, 14]),
+            "drill": ([0, 6, 9, 12], [0, 5, 10, 12], [0, 7, 11, 14]),
+            "boom_bap": ([0, 5, 8, 11], [0, 6, 10], [0, 4, 8, 10]),
+            "lofi": ([0, 6, 10], [0, 8], [0, 7, 12]),
+            "hindi_indie": ([0, 10], [0, 8], [0, 6, 10]),
+            "phonk": ([0, 4, 8, 10, 12], [0, 3, 8, 10, 14], [0, 4, 7, 12, 15]),
+            "house": ([0, 4, 8, 12], [0, 4, 10, 12], [0, 4, 8, 11, 12]),
+        }
+        base = list(self._prompt_pick(spec, "kick", families.get(genre, ([0, 7, 10, 12],)), rng))
         steps = list(base)
         if energy > 0.78 and genre != "hindi_indie":
             extra = rng.choice([3, 14, 15])
@@ -386,39 +418,51 @@ class ArrangementBuilder:
 
     def _snare_pattern(
         self,
-        genre: str,
+        spec: BeatSpec,
         energy: float,
         rng: random.Random,
         taste_profile: TasteProfileManager | None,
     ) -> list[int]:
+        genre = spec.genre
         learned = self._drum_pattern_from_profile("snare", genre, rng, taste_profile)
         if learned:
             return self._mutate_steps(learned, energy, rng, keep_backbeat=True)
-        steps = [4, 12]
-        if genre == "hindi_indie":
-            steps = [8]
-        if genre == "phonk":
-            steps = [4, 10, 12]
-        elif genre == "drill" and energy > 0.82:
-            steps = [4, 11, 12]
-        if genre == "boom_bap" and rng.random() > 0.5:
-            steps.append(15)
-        return steps
+        families = {
+            "trap": ([4, 12], [4, 11, 12], [4, 12, 15]),
+            "drill": ([4, 12], [4, 11, 12], [4, 10, 12]),
+            "boom_bap": ([4, 12], [4, 12, 15], [4, 11, 12]),
+            "lofi": ([4, 12], [4, 12, 15], [4, 11]),
+            "hindi_indie": ([8], [8, 15], [7, 8]),
+            "phonk": ([4, 10, 12], [4, 9, 12], [4, 12, 14]),
+            "house": ([4, 12], [4, 11, 12], [4, 12, 15]),
+        }
+        return list(self._prompt_pick(spec, "snare", families.get(genre, ([4, 12],)), rng))
 
     def _hat_pattern(
         self,
-        genre: str,
+        spec: BeatSpec,
         energy: float,
         rng: random.Random,
         taste_profile: TasteProfileManager | None,
     ) -> list[tuple[int, bool]]:
+        genre = spec.genre
         learned = self._hat_pattern_from_profile(genre, rng, taste_profile)
         if learned:
             return self._mutate_hats(learned, energy, rng)
         if genre == "hindi_indie":
-            return [(0, False), (4, False), (8, False), (12, False)]
+            families = (
+                [(0, False), (4, False), (8, False), (12, False)],
+                [(2, False), (6, False), (10, False), (14, False)],
+                [(0, False), (6, False), (8, False), (14, False)],
+            )
+            return list(self._prompt_pick(spec, "hats", families, rng))
         if genre in {"trap", "drill", "phonk"}:
-            steps = [(step, False) for step in range(0, 16, 2)]
+            families = [
+                [(step, False) for step in range(0, 16, 2)],
+                [(0, False), (2, False), (4, False), (6, False), (8, False), (10, False), (12, False), (14, False), (15, False)],
+                [(0, False), (3, False), (4, False), (6, False), (8, False), (11, False), (12, False), (14, False)],
+            ]
+            steps = list(self._prompt_pick(spec, "hats", families, rng))
             for roll_start in (6, 14):
                 if energy > 0.7 or rng.random() > 0.5:
                     steps.extend([(roll_start, False), (roll_start + 1, False)])
@@ -426,35 +470,48 @@ class ArrangementBuilder:
                 steps.append((11, True))
             return sorted(set(steps))
         if genre == "house":
-            return [(step, False) for step in range(2, 16, 2)] + [(15, True)]
-        return [(step, False) for step in range(0, 16, 4)] + [(10, True)]
+            families = (
+                [(step, False) for step in range(2, 16, 2)] + [(15, True)],
+                [(step, False) for step in range(0, 16, 2)] + [(7, True), (15, True)],
+                [(2, False), (6, False), (10, False), (14, False), (15, True)],
+            )
+            return list(self._prompt_pick(spec, "hats", families, rng))
+        families = (
+            [(step, False) for step in range(0, 16, 4)] + [(10, True)],
+            [(0, False), (4, False), (8, False), (12, False)],
+            [(2, False), (6, False), (10, False), (14, False)],
+        )
+        return list(self._prompt_pick(spec, "hats", families, rng))
 
     def _perc_pattern(
         self,
-        genre: str,
+        spec: BeatSpec,
         energy: float,
         rng: random.Random,
         taste_profile: TasteProfileManager | None,
     ) -> list[int]:
+        genre = spec.genre
         learned = self._drum_pattern_from_profile("perc", genre, rng, taste_profile)
         if learned:
             return self._mutate_steps(learned, energy, rng)
-        choices = {
-            "trap": [3, 11, 15],
-            "drill": [2, 7, 13],
-            "boom_bap": [7, 15],
-            "lofi": [6, 14],
-            "hindi_indie": [6, 14],
-            "phonk": [3, 7, 11, 15],
-            "house": [6, 10, 14],
-        }.get(genre, [7, 15])
+        families = {
+            "trap": ([3, 11, 15], [1, 7, 13], [3, 6, 11, 15]),
+            "drill": ([2, 7, 13], [3, 7, 11], [1, 6, 12]),
+            "boom_bap": ([7, 15], [6, 14], [3, 11]),
+            "lofi": ([6, 14], [7, 15], [3, 11]),
+            "hindi_indie": ([6, 14], [5, 13], [3, 11]),
+            "phonk": ([3, 7, 11, 15], [1, 5, 9, 13], [3, 6, 10, 14]),
+            "house": ([6, 10, 14], [3, 7, 11, 15], [2, 6, 10, 14]),
+        }
+        choices = list(self._prompt_pick(spec, "perc", families.get(genre, ([7, 15],)), rng))
         steps = [step for step in choices if energy > 0.6 or step < 12]
         if energy > 0.88 and rng.random() > 0.4:
             steps.append(rng.choice([1, 5, 9, 13]))
         return sorted(set(steps))
 
     def _progression_degree(self, spec: BeatSpec, section_index: int, bar_offset: int) -> int:
-        progression = self.PROGRESSIONS[spec.scale][section_index % len(self.PROGRESSIONS[spec.scale])]
+        progressions = self.PROGRESSIONS[spec.scale]
+        progression = progressions[self._prompt_index(spec, "progression", len(progressions), section_index) % len(progressions)]
         return progression[bar_offset % len(progression)]
 
     def _triad(self, spec: BeatSpec, degree: int, octave: int) -> tuple[int, int, int]:
@@ -572,3 +629,24 @@ class ArrangementBuilder:
                 )
             adjusted.sort(key=lambda event: (event.start_beat, event.pitch))
             events[stem] = adjusted
+
+    def _prompt_index(self, spec: BeatSpec, stem: str, count: int, salt: int = 0) -> int:
+        if count <= 1:
+            return 0
+        digest = hashlib.sha256(f"{spec.prompt.lower()}|{spec.genre}|{stem}|{salt}".encode("utf-8")).hexdigest()[:8]
+        return int(digest, 16) % count
+
+    def _prompt_pick(
+        self,
+        spec: BeatSpec,
+        stem: str,
+        options,
+        rng: random.Random,
+    ):
+        sequence = list(options)
+        if len(sequence) <= 1:
+            return sequence[0]
+        index = self._prompt_index(spec, stem, len(sequence))
+        if rng.random() < 0.22:
+            index = (index + rng.randint(1, len(sequence) - 1)) % len(sequence)
+        return sequence[index]

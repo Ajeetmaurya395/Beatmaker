@@ -72,9 +72,9 @@ class PromptEngineer:
                 ("outro", 4, 0.30),
             ),
         )),
-        (("aditya rikhari", "aditya", "rikhari", "hindi indie", "indie acoustic", "indie pop", "moody acoustic"), GenrePreset(
+        (("aditya rikhari", "aditya", "rikhari", "hindi indie", "indie acoustic", "indie pop", "moody acoustic", "acoustic", "unplugged", "guitar", "piano", "folk"), GenrePreset(
             genre="hindi_indie",
-            bpm_range=(74, 96),
+            bpm_range=(74, 100),
             swing=0.16,
             sections=(
                 ("intro", 4, 0.28),
@@ -83,18 +83,6 @@ class PromptEngineer:
                 ("verse", 8, 0.50),
                 ("hook", 8, 0.66),
                 ("outro", 4, 0.24),
-            ),
-        )),
-        (("acoustic", "unplugged", "guitar", "folk"), GenrePreset(
-            genre="lofi",
-            bpm_range=(75, 100),
-            swing=0.12,
-            sections=(
-                ("intro", 4, 0.30),
-                ("verse", 8, 0.50),
-                ("hook", 8, 0.65),
-                ("verse", 8, 0.55),
-                ("outro", 4, 0.25),
             ),
         )),
         (("phonk", "drift", "cowbell"), GenrePreset(
@@ -217,19 +205,34 @@ class PromptEngineer:
         rng: random.Random,
         taste_strength: float,
     ) -> GenrePreset:
+        scored: list[tuple[int, GenrePreset]] = []
         for keywords, preset in self.GENRE_PRESETS:
-            if any(keyword in prompt for keyword in keywords):
-                return preset
-        if reference_profile:
-            for keywords, preset in self.GENRE_PRESETS:
-                if reference_profile.genre_hint == preset.genre:
-                    return preset
+            score = sum(2 if " " in keyword else 1 for keyword in keywords if keyword in prompt)
+            if reference_profile and reference_profile.genre_hint == preset.genre:
+                score += 3
+            if score > 0:
+                scored.append((score, preset))
+        preferred = None
         if taste_profile and rng.random() < taste_strength:
             preferred = taste_profile.preferred_genre(rng)
-            if preferred:
+        if preferred:
+            updated: list[tuple[int, GenrePreset]] = []
+            for score, preset in scored:
+                if preferred == preset.genre:
+                    score += max(1, int(round(taste_strength * 4)))
+                updated.append((score, preset))
+            scored = updated
+            if not scored:
                 for keywords, preset in self.GENRE_PRESETS:
                     if preferred == preset.genre:
                         return preset
+        if scored:
+            max_score = max(score for score, _preset in scored)
+            best = [preset for score, preset in scored if score == max_score]
+            return rng.choice(best)
+        fallback = self._fallback_preset_for_prompt(prompt)
+        if fallback:
+            return fallback
         return GenrePreset(
             genre="trap",
             bpm_range=(128, 145),
@@ -242,6 +245,34 @@ class PromptEngineer:
                 ("outro", 4, 0.35),
             ),
         )
+
+    def _fallback_preset_for_prompt(self, prompt: str) -> GenrePreset | None:
+        if any(word in prompt for word in ("late night", "dreamy", "warm", "soft", "floaty", "ambient")):
+            return GenrePreset(
+                genre="lofi",
+                bpm_range=(72, 92),
+                swing=0.12,
+                sections=(
+                    ("intro", 4, 0.30),
+                    ("loop", 8, 0.52),
+                    ("variation", 8, 0.63),
+                    ("loop", 8, 0.56),
+                    ("outro", 4, 0.28),
+                ),
+            )
+        if any(word in prompt for word in ("club", "dance", "summer", "festival", "bouncy")):
+            for keywords, preset in self.GENRE_PRESETS:
+                if preset.genre == "house":
+                    return preset
+        if any(word in prompt for word in ("street", "heavy", "aggressive", "menacing", "hard")):
+            for keywords, preset in self.GENRE_PRESETS:
+                if preset.genre == "drill":
+                    return preset
+        if any(word in prompt for word in ("romantic", "indie", "acoustic", "guitar", "piano")):
+            for keywords, preset in self.GENRE_PRESETS:
+                if preset.genre == "hindi_indie":
+                    return preset
+        return None
 
     def _extract_bpm(self, prompt: str) -> int | None:
         # Match '90 bpm', '90bpm'

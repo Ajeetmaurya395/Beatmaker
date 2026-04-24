@@ -212,16 +212,20 @@ class BeatmakerEngine:
             return prompt
         prompt_lower = prompt.lower()
         tag_phrases: list[str] = []
-        if "aditya_rikhari_like" in tags and "aditya rikhari" not in prompt_lower:
-            tag_phrases.append("aditya rikhari")
-        if "hindi_indie" in tags and "hindi indie" not in prompt_lower:
-            tag_phrases.append("hindi indie")
-        if "moody" in tags and "moody" not in prompt_lower:
-            tag_phrases.append("moody")
-        if "lofi" in tags and "lofi" not in prompt_lower:
-            tag_phrases.append("lofi")
-        if "desi" in tags and "desi" not in prompt_lower:
-            tag_phrases.append("desi")
+        phrase_map = {
+            "aditya_rikhari_like": "aditya rikhari",
+            "hindi_indie": "hindi indie",
+            "moody": "moody",
+            "lofi": "lofi",
+            "desi": "desi",
+            "boom_bap": "boom bap",
+            "bolly_trap": "bollywood trap",
+            "ritviz_like": "ritviz style desi house",
+        }
+        for tag in tags:
+            phrase = phrase_map.get(tag, tag.replace("_", " "))
+            if phrase not in prompt_lower:
+                tag_phrases.append(phrase)
         if not tag_phrases:
             return prompt
         return f"{prompt} [{' '.join(tag_phrases)}]"

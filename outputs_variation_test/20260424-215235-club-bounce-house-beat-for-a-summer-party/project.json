@@ -1,0 +1,230 @@
+{
+  "spec": {
+    "prompt": "club bounce house beat for a summer party",
+    "genre": "house",
+    "bpm": 123,
+    "key_root": "E",
+    "scale": "major",
+    "swing": 0.04,
+    "seed": 538211329,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 8,
+        "energy": 0.4
+      },
+      {
+        "name": "groove",
+        "bars": 8,
+        "energy": 0.72
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "break",
+        "bars": 8,
+        "energy": 0.55
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.96
+      },
+      {
+        "name": "outro",
+        "bars": 8,
+        "energy": 0.32
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=9, active_genre=house, taste_strength=0.15, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 8,
+      "energy": 0.4
+    },
+    {
+      "name": "groove",
+      "start_bar": 8,
+      "bars": 8,
+      "energy": 0.72
+    },
+    {
+      "name": "drop",
+      "start_bar": 16,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "break",
+      "start_bar": 24,
+      "bars": 8,
+      "energy": 0.55
+    },
+    {
+      "name": "drop",
+      "start_bar": 32,
+      "bars": 8,
+      "energy": 0.96
+    },
+    {
+      "name": "outro",
+      "start_bar": 40,
+      "bars": 8,
+      "energy": 0.32
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 205,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 117,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 396,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 171,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 172,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 441,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 125,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-24T21:53:11",
+  "render": {
+    "sample_pack": "house-538211329 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "house-538211329",
+    "sample_pack_path": "outputs_variation_test/_auto_packs/house-538211329",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=9, active_genre=house, taste_strength=0.15, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:8|groove:8|drop:8|break:8|drop:8|outro:8",
+    "pattern_summary": {
+      "kick": {
+        "10,12,4": 2,
+        "0,10,4": 4,
+        "0,12,4": 4,
+        "0,10,12": 3,
+        "0,12,4,8": 1,
+        "0,12,8": 1,
+        "0,10,12,4": 12,
+        "0,11,12,4,8": 4,
+        "0,1,12,15,4,8": 1,
+        "0,10,12,15,4": 3,
+        "0,10,12,3,4,6": 1,
+        "0,10,12,3,4": 4,
+        "0,1,10,12,3,4": 1,
+        "0,11,12,3,4,8": 1,
+        "0,10,12,15,3,4": 2,
+        "0,12,15,3,4,8": 1,
+        "0,10,12,14,4,9": 1,
+        "0,10,12,14,4": 1,
+        "12,4,8": 1
+      },
+      "snare": {
+        "12,4": 29,
+        "11,12,4": 3,
+        "12,15,4": 5,
+        "12,4,9": 1,
+        "12,4,6": 2,
+        "12,3,4": 4,
+        "12,14,4": 2,
+        "11,12,3,4": 1,
+        "12,15,3,4": 1
+      },
+      "hats": {
+        "10c,12c,14c,15o,2c,4c,6c,8c": 30,
+        "0c,10c,12c,14c,15o,2c,4c,6c,7o,8c": 5,
+        "0c,10c,12c,14c,15o,2c,4c,6c,7c,7o,8c": 2,
+        "10c,13c,14c,15c,15o,2c,6c": 1,
+        "10c,12c,14c,15o,2c,4c,6c,7c,8c": 4,
+        "10c,14c,15o,2c,6c": 3,
+        "10c,12c,13c,14c,15c,15o,2c,4c,6c,8c": 1,
+        "10c,14c,15c,15o,2c,6c": 1,
+        "10c,12c,14c,15c,15o,2c,4c,5c,6c,8c": 1
+      },
+      "perc": {
+        "10,2": 3,
+        "10,6": 6,
+        "11,7": 1,
+        "2,6": 6,
+        "10,14,2,6": 9,
+        "10,14,2,3,6,9": 1,
+        "10,13,14,2,3,6": 1,
+        "10,13,14,2,6": 1,
+        "10,14,15,2,5,6": 1,
+        "10,14,2,5,6,9": 1,
+        "1,10,14,2,6": 2,
+        "1,10,13,14,2,6": 1,
+        "10,2,6": 6,
+        "11,3,7": 1,
+        "1,10,14,2,6,9": 1,
+        "10,14,2,5,6": 2,
+        "11,15,3,7": 2,
+        "10,13,14,15,2,6": 1,
+        "10,14,15,2,6": 1,
+        "3,7": 1
+      },
+      "bass_808": {
+        "0.00/0.50,1.50/0.50,2.00/0.50": 13,
+        "0.00/0.75,1.00/0.75,2.00/0.75": 2,
+        "0.00/0.50,1.00/0.75,2.00/0.50": 2,
+        "0.00/0.50,1.50/0.50,2.00/0.50,3.50/0.35": 25,
+        "0.00/0.50,1.00/0.75,2.00/0.50,2.75/0.75": 1,
+        "0.00/0.50,2.00/0.50,3.50/0.35": 3,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 2
+      },
+      "chords": {
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.50/1.75,1.50/1.75,1.50/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 39,
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.00/1.75,1.00/1.75,1.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 6,
+        "0.00/1.75,0.00/1.75,0.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75": 3
+      },
+      "lead": {
+        "_": 16,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 23,
+        "0.50/0.75,1.50/0.75,2.50/0.75,3.50/0.75": 2,
+        "0.00/0.75,0.75/0.75,1.50/0.75,2.25/0.75,3.00/0.75": 2,
+        "0.00/0.75,1.00/0.75,3.00/0.75": 1,
+        "0.00/0.75,1.00/0.75,2.00/0.75": 3,
+        "0.50/0.75,1.50/0.75,3.50/0.75": 1
+      }
+    }
+  }
+}

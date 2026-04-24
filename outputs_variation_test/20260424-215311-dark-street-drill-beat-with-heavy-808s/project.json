@@ -1,0 +1,207 @@
+{
+  "spec": {
+    "prompt": "dark street drill beat with heavy 808s",
+    "genre": "drill",
+    "bpm": 146,
+    "key_root": "D",
+    "scale": "minor",
+    "swing": 0.11,
+    "seed": 1677994234,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.48
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "verse",
+        "bars": 8,
+        "energy": 0.75
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.98
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.38
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=9, active_genre=drill, taste_strength=0.15, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.48
+    },
+    {
+      "name": "hook",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "verse",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.75
+    },
+    {
+      "name": "hook",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.98
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.38
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 141,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 77,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 336,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 103,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 141,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 186,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 109,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-24T21:53:31",
+  "render": {
+    "sample_pack": "drill-1677994234 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "drill-1677994234",
+    "sample_pack_path": "outputs_variation_test/_auto_packs/drill-1677994234",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=9, active_genre=drill, taste_strength=0.15, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:4|hook:8|verse:8|hook:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,11,14,7": 11,
+        "0,11,14,15,7": 2,
+        "0,10,12,3,5,6": 1,
+        "0,11,14,7,9": 1,
+        "0,11,14,15,6,7": 2,
+        "0,11,14,3,7": 3,
+        "0,12,6,9": 2,
+        "0,10,12,5": 2,
+        "0,12,15,6,9": 1,
+        "0,1,12,15,6,9": 1,
+        "0,12,14,6,9": 1,
+        "0,11,14,6,7": 1,
+        "11,14,7": 1,
+        "0,11,14": 3
+      },
+      "snare": {
+        "11,12,4": 1,
+        "10,12,4": 4,
+        "12,4": 20,
+        "12,3,4": 1,
+        "10,12,4,9": 1,
+        "12,14,4": 2,
+        "12,4,6": 1,
+        "12,15,4": 1,
+        "12,4,9": 1
+      },
+      "hats": {
+        "0c,10c,12c,14c,2c,4c,6c,8c": 1,
+        "0c,10c,12c,14c,15c,2c,4c,6c,7c,8c": 12,
+        "0c,10c,12c,14c,15c,2c,4c,6c,8c": 2,
+        "0c,11c,12c,14c,3c,4c,6c,8c": 1,
+        "0c,10c,11o,12c,14c,15c,2c,4c,6c,7c,8c": 9,
+        "0c,11c,11o,12c,14c,15c,3c,4c,6c,7c,8c": 1,
+        "0c,10c,11o,12c,13c,14c,15c,2c,4c,6c,7c,8c": 2,
+        "0c,10c,11o,12c,14c,15c,2c,4c,5c,6c,7c,8c": 3,
+        "0c,11c,11o,12c,14c,15c,3c,4c,5c,6c,7c,8c": 1
+      },
+      "perc": {
+        "2,7": 7,
+        "1,13,2,7": 3,
+        "13,14,2,7,9": 1,
+        "13,2,7": 11,
+        "13,2,5,7": 1,
+        "1,12,6,9": 1,
+        "13,2,7,9": 3,
+        "13,2,5,7,9": 1,
+        "13,2,3,7": 1,
+        "13,2,6,7": 1,
+        "1,12,15,6": 1,
+        "1,6": 1
+      },
+      "bass_808": {
+        "0.00/1.00,1.00/0.50,2.00/1.00,3.00/0.75": 3,
+        "0.00/0.75,0.75/0.25,2.00/0.90,2.75/0.25,3.50/0.35": 17,
+        "0.00/0.75,2.00/0.90,2.75/0.25,3.50/0.35": 1,
+        "0.00/0.75,0.75/0.25,2.00/0.90,3.50/0.35": 3,
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 3,
+        "0.00/1.00,1.75/0.25,2.00/1.00,3.00/0.75": 1,
+        "0.00/0.75,0.75/0.25,2.00/0.90": 4
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50,2.00/3.50,2.00/3.50,2.00/3.50": 11,
+        "0.00/2.75,0.00/2.75,0.00/2.75,2.00/2.75,2.00/2.75,2.00/2.75": 15,
+        "0.00/3.50,0.00/3.50,0.00/3.50": 3,
+        "0.00/3.50,0.00/3.50,0.00/3.50,1.50/3.50,1.50/3.50,1.50/3.50,3.00/3.50,3.00/3.50,3.00/3.50": 2,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 1
+      },
+      "lead": {
+        "0.50/0.40,1.25/0.40,2.00/0.40,3.50/0.40": 4,
+        "0.25/0.40,1.75/0.40,2.50/0.40": 1,
+        "0.25/0.40,1.75/0.40,3.00/0.40": 2,
+        "0.25/0.40,1.75/0.40,2.50/0.40,3.00/0.40": 19,
+        "0.75/0.40,1.50/0.40,2.50/0.40,3.25/0.40": 2,
+        "_": 4
+      }
+    }
+  }
+}

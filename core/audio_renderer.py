@@ -280,10 +280,14 @@ class AudioRenderer:
                 tremolo = 1.0 + 0.12 * math.sin(2 * math.pi * 3.5 * t)
                 sample = sig * env * tremolo * 0.5
             elif is_acoustic:
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.01, 0.4, 0.1, 0.3)
+                # Warmer Piano/Acoustic — significantly softer than before
+                is_piano = "piano" in prompt
+                attack = 0.04 if is_piano else 0.08
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, attack, 0.45, 0.25, 0.4)
                 fundamental = math.sin(2 * math.pi * freq * t)
-                harmonics = sum(math.sin(2 * math.pi * freq * i * t) / i for i in range(2, 6)) * math.exp(-15 * t)
-                sample = (fundamental * 0.6 + harmonics * 0.4) * env
+                # Cap harmonics to 3 instead of 6 for a warmer, less 'buzzy' tone
+                harmonics = sum(math.sin(2 * math.pi * freq * i * t) / (i * 2) for i in range(2, 4)) * math.exp(-12 * t)
+                sample = (fundamental * 0.8 + harmonics * 0.2) * env * 0.75
             elif is_lofi:
                 env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.03, 0.3, 0.4, 0.4)
                 fundamental = math.sin(2 * math.pi * freq * t)

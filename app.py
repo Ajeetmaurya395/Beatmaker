@@ -9,7 +9,7 @@ import random
 
 from core.engine import BeatmakerEngine
 from core.drum_extractor import DrumPatternExtractor
-from core.dynamic_sample_pack import generate_sample_pack, get_available_genres
+from core.dynamic_sample_pack import get_available_genres
 from core.pattern_library import PatternLibraryManager
 from core.reference_analyzer import ReferenceAnalyzer
 from core.hub_utils import HubManager, get_indie_recommendations
@@ -37,7 +37,7 @@ class GenerateRequest(BaseModel):
     genre: Optional[str] = None # Help guide the dynamic sample pack
     reference: Optional[str] = None
     reference_mode: str = "inspire"
-    taste_strength: float = 0.35
+    taste_strength: float = 0.15
     deterministic: bool = False
     tags: Optional[Union[List[str], str]] = None
 
@@ -55,27 +55,11 @@ async def get_genres():
 @app.post("/api/generate")
 async def generate_beat(req: GenerateRequest):
     try:
-        prompt_lower = req.prompt.lower()
-        is_acoustic = "acoustic" in prompt_lower
+        tags = parse_tags(req.tags) if isinstance(req.tags, str) else list(req.tags or [])
+        if req.genre:
+            tags.append(req.genre)
+        tags = list(dict.fromkeys(tags))
 
-        pack_genre = req.genre or "trap"
-        if req.genre is None:
-            # simple heuristic if not provided directly
-            genres = get_available_genres()
-            for g in genres:
-                if g in prompt_lower:
-                    pack_genre = g
-                    break
-        
-        if is_acoustic:
-            pack_genre = "acoustic"
-        
-        # 2. Generate dynamic sample pack
-        sample_pack_seed = req.seed if req.seed is not None else random.randint(0, 999999)
-        sample_pack_dir = OUTPUT_DIR / f"tmp_pack_{sample_pack_seed}_{pack_genre}"
-        generate_sample_pack(pack_genre, sample_pack_dir, sample_pack_seed)
-
-        # 3. Generate beat
         bundle = engine.generate(
             prompt=req.prompt,
             bpm_override=req.bpm,
@@ -83,11 +67,10 @@ async def generate_beat(req: GenerateRequest):
             deterministic=req.deterministic,
             total_bars_override=req.bars,
             structure_override=req.structure,
-            sample_pack_dir=sample_pack_dir,
             reference_path=req.reference,
             taste_strength=req.taste_strength,
             reference_mode=req.reference_mode,
-            tags=parse_tags(req.tags) if isinstance(req.tags, str) else (req.tags or []),
+            tags=tags,
         )
         
         return {
