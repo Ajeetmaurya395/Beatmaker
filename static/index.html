@@ -109,6 +109,25 @@
                     <div id="lora-status" class="caption" style="display: none; margin-top: 8px; text-align: center; color: var(--accent);">Uploading and initializing Lightning Job...</div>
                 </form>
             </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-header">
+                    <h3>Indie Hub (Hugging Face)</h3>
+                </div>
+                <div class="caption">Download pre-trained Indie models or Desi percussion datasets directly from the community.</div>
+                
+                <div id="hub-recommendations" style="margin-top: 16px;">
+                    <!-- Recommendation chips -->
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <input type="text" id="hub-repo-id" placeholder="HF Repo ID (e.g. sarvamai/bhavvani)" style="width: 100%; margin-bottom: 8px;">
+                    <button class="btn btn-secondary" id="btn-hub-download" style="width: 100%;">
+                        🚀 Fetch from Hub
+                    </button>
+                    <div id="hub-status" class="caption" style="display: none; margin-top: 8px; text-align: center; color: var(--accent);">Connecting to Hugging Face...</div>
+                </div>
+            </div>
         </aside>
 
         <!-- Right Panel: Player & Library -->

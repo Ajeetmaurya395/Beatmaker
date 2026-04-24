@@ -66,11 +66,13 @@ class ArrangementBuilder:
         taste_profile: TasteProfileManager | None = None,
         stem_seed_overrides: dict[str, int] | None = None,
         humanize_amounts: dict[str, float] | None = None,
+        pattern_hints: dict[str, list[int] | list[tuple[int, bool]]] | None = None,
     ) -> tuple[dict[str, list[NoteEvent]], list[SectionMarker]]:
         markers: list[SectionMarker] = []
         events: dict[str, list[NoteEvent]] = {stem: [] for stem in spec.stems}
         stem_seed_overrides = stem_seed_overrides or {}
         humanize_amounts = humanize_amounts or {}
+        pattern_hints = pattern_hints or {}
 
         start_bar = 0
         for section_index, section in enumerate(spec.sections):
@@ -103,6 +105,7 @@ class ArrangementBuilder:
                     hats_rng,
                     perc_rng,
                     taste_profile,
+                    pattern_hints,
                 )
                 self._add_bass_bar(events, spec, section.energy, chord_degree, bar_number, bass_rng)
                 self._add_chord_bar(events, spec, section.energy, chord_degree, bar_number, chord_rng)
@@ -126,12 +129,18 @@ class ArrangementBuilder:
         hats_rng: random.Random,
         perc_rng: random.Random,
         taste_profile: TasteProfileManager | None,
+        pattern_hints: dict[str, list[int] | list[tuple[int, bool]]],
     ) -> None:
         base = bar_number * 4
-        kick_steps = self._kick_pattern(spec.genre, energy, kick_rng, taste_profile)
-        snare_steps = self._snare_pattern(spec.genre, energy, snare_rng, taste_profile)
-        hat_steps = self._hat_pattern(spec.genre, energy, hats_rng, taste_profile)
-        perc_steps = self._perc_pattern(spec.genre, energy, perc_rng, taste_profile)
+        kick_steps = list(pattern_hints.get("kick") or self._kick_pattern(spec.genre, energy, kick_rng, taste_profile))
+        snare_steps = list(pattern_hints.get("snare") or self._snare_pattern(spec.genre, energy, snare_rng, taste_profile))
+        hat_steps = list(pattern_hints.get("hats") or self._hat_pattern(spec.genre, energy, hats_rng, taste_profile))
+        perc_steps = list(pattern_hints.get("perc") or self._perc_pattern(spec.genre, energy, perc_rng, taste_profile))
+
+        kick_steps = self._mutate_steps(kick_steps, energy, kick_rng)
+        snare_steps = self._mutate_steps(snare_steps, energy, snare_rng, keep_backbeat=True)
+        hat_steps = self._mutate_hats(hat_steps, energy, hats_rng)
+        perc_steps = self._mutate_steps(perc_steps, energy, perc_rng)
 
         for step in kick_steps:
             events["kick"].append(
@@ -202,6 +211,19 @@ class ArrangementBuilder:
                 ],
             ]
             pattern = rng.choice(patterns)
+        elif spec.genre in {"hindi_indie"}:
+            patterns = [
+                [
+                    (0.0, 1.4, root),
+                    (2.0, 1.2, fifth),
+                ],
+                [
+                    (0.0, 1.1, root),
+                    (1.75, 0.6, fifth),
+                    (3.0, 0.7, root),
+                ],
+            ]
+            pattern = rng.choice(patterns)
         else:
             patterns = [
                 [
@@ -237,12 +259,15 @@ class ArrangementBuilder:
                 continue
             if rng.random() < 0.08 and start not in {0.0, 2.0}:
                 continue
+            velocity = 92 + int(energy * 20)
+            if spec.genre == "hindi_indie":
+                velocity = 68 + int(energy * 12)
             events["bass_808"].append(
                 NoteEvent(
                     pitch=pitch,
                     start_beat=base + start,
                     duration_beats=duration,
-                    velocity=92 + int(energy * 20),
+                    velocity=velocity,
                 )
             )
 
@@ -265,6 +290,9 @@ class ArrangementBuilder:
         if spec.genre == "house":
             starts = rng.choice([(0.0, 2.0), (0.0, 1.5, 3.0)])
             duration = 1.75
+        elif spec.genre == "hindi_indie":
+            starts = rng.choice([(0.0,), (0.0, 2.0)])
+            duration = 3.9 if energy < 0.6 else 3.2
         elif spec.genre == "lofi":
             starts = rng.choice([(0.0,), (0.0, 2.0)])
             duration = 3.8
@@ -274,12 +302,15 @@ class ArrangementBuilder:
 
         for start in starts:
             for pitch in chord:
+                velocity = 54 + int(energy * 20)
+                if spec.genre == "hindi_indie":
+                    velocity = min(90, 42 + int(energy * 18))
                 events["chords"].append(
                     NoteEvent(
                         pitch=pitch,
                         start_beat=base + start,
                         duration_beats=duration,
-                        velocity=54 + int(energy * 20),
+                        velocity=velocity,
                     )
                 )
 
@@ -292,7 +323,7 @@ class ArrangementBuilder:
         bar_number: int,
         rng: random.Random,
     ) -> None:
-        if energy < 0.45 and spec.genre not in {"lofi"}:
+        if energy < 0.45 and spec.genre not in {"lofi", "hindi_indie"}:
             return
 
         base = bar_number * 4
@@ -302,6 +333,7 @@ class ArrangementBuilder:
             "drill": [0.75, 1.5, 2.5, 3.25],
             "boom_bap": [1.0, 2.25, 3.0],
             "lofi": [0.0, 1.5, 3.0],
+            "hindi_indie": [0.0, 1.75, 3.25],
             "phonk": [0.25, 1.0, 2.0, 2.75, 3.5],
             "house": [0.0, 0.75, 1.5, 2.25, 3.0],
         }.get(spec.genre, [0.5, 1.5, 2.5, 3.0])
@@ -312,12 +344,17 @@ class ArrangementBuilder:
             pitch = scale_pool[(idx + bar_number) % len(scale_pool)]
             if spec.genre == "phonk" and idx % 2 == 1:
                 pitch += 12
+            duration = 0.4 if spec.genre in {"trap", "drill", "phonk"} else 0.75
+            velocity = 58 + int(energy * 26)
+            if spec.genre == "hindi_indie":
+                duration = 0.95
+                velocity = min(90, 44 + int(energy * 16))
             events["lead"].append(
                 NoteEvent(
                     pitch=pitch,
                     start_beat=base + start,
-                    duration_beats=0.4 if spec.genre in {"trap", "drill", "phonk"} else 0.75,
-                    velocity=58 + int(energy * 26),
+                    duration_beats=duration,
+                    velocity=velocity,
                 )
             )
 
@@ -336,11 +373,12 @@ class ArrangementBuilder:
             "drill": [0, 6, 9, 12],
             "boom_bap": [0, 5, 8, 11],
             "lofi": [0, 6, 10],
+            "hindi_indie": [0, 10],
             "phonk": [0, 4, 8, 10, 12],
             "house": [0, 4, 8, 12],
         }.get(genre, [0, 7, 10, 12])
         steps = list(base)
-        if energy > 0.78:
+        if energy > 0.78 and genre != "hindi_indie":
             extra = rng.choice([3, 14, 15])
             if extra not in steps:
                 steps.append(extra)
@@ -357,6 +395,8 @@ class ArrangementBuilder:
         if learned:
             return self._mutate_steps(learned, energy, rng, keep_backbeat=True)
         steps = [4, 12]
+        if genre == "hindi_indie":
+            steps = [8]
         if genre == "phonk":
             steps = [4, 10, 12]
         elif genre == "drill" and energy > 0.82:
@@ -375,6 +415,8 @@ class ArrangementBuilder:
         learned = self._hat_pattern_from_profile(genre, rng, taste_profile)
         if learned:
             return self._mutate_hats(learned, energy, rng)
+        if genre == "hindi_indie":
+            return [(0, False), (4, False), (8, False), (12, False)]
         if genre in {"trap", "drill", "phonk"}:
             steps = [(step, False) for step in range(0, 16, 2)]
             for roll_start in (6, 14):
@@ -402,6 +444,7 @@ class ArrangementBuilder:
             "drill": [2, 7, 13],
             "boom_bap": [7, 15],
             "lofi": [6, 14],
+            "hindi_indie": [6, 14],
             "phonk": [3, 7, 11, 15],
             "house": [6, 10, 14],
         }.get(genre, [7, 15])
@@ -479,6 +522,8 @@ class ArrangementBuilder:
         keep_backbeat: bool = False,
     ) -> list[int]:
         mutated = sorted(set(steps))
+        if len(mutated) <= 2 and energy < 0.7:
+            return mutated
         if energy > 0.82 and rng.random() < 0.55:
             mutated.append(rng.choice([1, 3, 6, 9, 14, 15]))
         if energy < 0.45 and len(mutated) > 2:
@@ -494,6 +539,8 @@ class ArrangementBuilder:
         rng: random.Random,
     ) -> list[tuple[int, bool]]:
         mutated = list(dict.fromkeys(steps))
+        if len(mutated) <= 4 and energy < 0.75:
+            return sorted(set(mutated))
         if energy > 0.8 and rng.random() < 0.45:
             mutated.extend([(rng.choice([5, 6, 13, 14]), False), (rng.choice([7, 15]), False)])
         return sorted(set(mutated))

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 import random
 
@@ -35,6 +36,7 @@ class TasteProfileManager:
                 "type": source_type,
                 "source": str(profile.source_path),
                 "summary": profile.summary,
+                "source_kind": getattr(profile, "source_kind", "file"),
             }
         )
         self._save()
@@ -228,7 +230,9 @@ class TasteProfileManager:
     ) -> str | None:
         candidates = {}
         for key in set(positives) | set(negatives):
-            score = positives.get(key, 0.0) - (negatives.get(key, 0.0) * 0.9)
+            positive_score = math.log1p(max(0.0, positives.get(key, 0.0)))
+            negative_score = math.log1p(max(0.0, negatives.get(key, 0.0))) * 0.9
+            score = positive_score - negative_score
             if score > 0.0:
                 candidates[key] = score
         if not candidates:

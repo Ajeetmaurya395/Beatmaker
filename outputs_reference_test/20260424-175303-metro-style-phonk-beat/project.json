@@ -1,0 +1,163 @@
+{
+  "spec": {
+    "prompt": "metro style phonk beat",
+    "genre": "trap",
+    "bpm": 138,
+    "key_root": "C#",
+    "scale": "minor",
+    "swing": 0.08,
+    "seed": 191563259,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 1,
+        "energy": 0.7525000000000001
+      },
+      {
+        "name": "hook",
+        "bars": 2,
+        "energy": 0.9550000000000001
+      },
+      {
+        "name": "verse",
+        "bars": 2,
+        "energy": 0.874
+      },
+      {
+        "name": "hook",
+        "bars": 2,
+        "energy": 0.9775
+      },
+      {
+        "name": "outro",
+        "bars": 1,
+        "energy": 0.7075
+      }
+    ],
+    "reference_summary": "tmp_reference.wav -> phonk, 138 BPM, C# minor, energy 1.00, 8.0s",
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=7, active_genre=trap, taste_strength=0.35, reference_mode=replicate"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 1,
+      "energy": 0.7525000000000001
+    },
+    {
+      "name": "hook",
+      "start_bar": 1,
+      "bars": 2,
+      "energy": 0.9550000000000001
+    },
+    {
+      "name": "verse",
+      "start_bar": 3,
+      "bars": 2,
+      "energy": 0.874
+    },
+    {
+      "name": "hook",
+      "start_bar": 5,
+      "bars": 2,
+      "energy": 0.9775
+    },
+    {
+      "name": "outro",
+      "start_bar": 7,
+      "bars": 1,
+      "energy": 0.7075
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 38,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 16,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 86,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 26,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 31,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 30,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 32,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-24T17:53:07",
+  "render": {
+    "sample_pack": null,
+    "sample_pack_name": null,
+    "sample_pack_path": null,
+    "reference_summary": "tmp_reference.wav -> phonk, 138 BPM, C# minor, energy 1.00, 8.0s",
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, structures=1, entries=7, active_genre=trap, taste_strength=0.35, reference_mode=replicate"
+  },
+  "analysis": {
+    "structure_signature": "intro:1|hook:2|verse:2|hook:2|outro:1",
+    "pattern_summary": {
+      "kick": {
+        "0,10,12,7": 2,
+        "0,10,12,14,7": 2,
+        "0,10,12,15,7": 1,
+        "0,10,12,3,7": 3
+      },
+      "snare": {
+        "12,4": 8
+      },
+      "hats": {
+        "0c,10c,12c,14c,15c,2c,4c,6c,7c,8c": 2,
+        "0c,10c,11o,12c,14c,15c,2c,4c,6c,7c,8c": 6
+      },
+      "perc": {
+        "11,15,3": 6,
+        "1,11,15,3": 1,
+        "11,13,15,3": 1
+      },
+      "bass_808": {
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 4,
+        "0.00/1.00,2.00/1.00,3.00/0.75": 1,
+        "0.00/1.00,1.00/0.50,2.00/1.00,3.00/0.75": 3
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50": 1,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 5,
+        "0.00/2.75,0.00/2.75,0.00/2.75,2.00/2.75,2.00/2.75,2.00/2.75": 1,
+        "0.00/3.50,0.00/3.50,0.00/3.50,2.00/3.50,2.00/3.50,2.00/3.50": 1
+      },
+      "lead": {
+        "0.50/0.40,1.25/0.40,2.00/0.40,3.00/0.40": 8
+      }
+    }
+  }
+}

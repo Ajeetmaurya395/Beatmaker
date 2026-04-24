@@ -8,8 +8,11 @@ from pathlib import Path
 import random
 
 from core.engine import BeatmakerEngine
+from core.drum_extractor import DrumPatternExtractor
 from core.dynamic_sample_pack import generate_sample_pack, get_available_genres
+from core.pattern_library import PatternLibraryManager
 from core.reference_analyzer import ReferenceAnalyzer
+from core.hub_utils import HubManager, get_indie_recommendations
 import shutil
 
 app = FastAPI(title="Beatmaker API")
@@ -32,6 +35,11 @@ class GenerateRequest(BaseModel):
     bars: Optional[int] = None
     structure: Optional[str] = None
     genre: Optional[str] = None # Help guide the dynamic sample pack
+    reference: Optional[str] = None
+    reference_mode: str = "inspire"
+    taste_strength: float = 0.35
+    deterministic: bool = False
+    tags: Optional[list[str] | str] = None
 
 class RateRequest(BaseModel):
     feedback: str  # 'favorite', 'like', 'skip', 'dislike'
@@ -72,10 +80,14 @@ async def generate_beat(req: GenerateRequest):
             prompt=req.prompt,
             bpm_override=req.bpm,
             seed=req.seed,
+            deterministic=req.deterministic,
             total_bars_override=req.bars,
             structure_override=req.structure,
             sample_pack_dir=sample_pack_dir,
-            reference_path=None
+            reference_path=req.reference,
+            taste_strength=req.taste_strength,
+            reference_mode=req.reference_mode,
+            tags=parse_tags(req.tags) if isinstance(req.tags, str) else (req.tags or []),
         )
         
         return {
@@ -131,7 +143,7 @@ async def get_profile():
     return {"summary": engine.taste_profile.summary(), "raw": engine.taste_profile.profile}
 
 @app.post("/api/ingest")
-async def ingest_reference(file: UploadFile = File(...)):
+async def ingest_reference(file: UploadFile = File(...), tags: Optional[str] = Form(None)):
     if not file.filename.endswith(".wav"):
         raise HTTPException(status_code=400, detail="Only .wav files are supported")
     temp_path = OUTPUT_DIR / file.filename
@@ -140,9 +152,22 @@ async def ingest_reference(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
             
         analyzer = ReferenceAnalyzer()
+        drum_extractor = DrumPatternExtractor()
+        pattern_library = PatternLibraryManager(data_root=DATA_DIR)
         profile = analyzer.analyze(temp_path)
         summary = engine.taste_profile.ingest_reference(profile)
-        return {"status": "success", "summary": summary, "profile_summary": engine.taste_profile.summary()}
+        normalized_tags = pattern_library.normalize_tags(parse_tags(tags))
+        pattern_path = pattern_library.add_reference(
+            profile,
+            tags=normalized_tags,
+            drum_pattern=drum_extractor.extract(temp_path, bpm_hint=profile.bpm),
+        )
+        return {
+            "status": "success",
+            "summary": summary,
+            "pattern_path": str(pattern_path),
+            "profile_summary": engine.taste_profile.summary(),
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
@@ -223,6 +248,37 @@ async def train_rlhf():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/hub/recommendations")
+async def hub_recommendations():
+    return {"recommendations": get_indie_recommendations()}
+
+@app.post("/api/hub/download")
+async def hub_download(req: dict):
+    repo_id = req.get("repo_id")
+    repo_type = req.get("type", "model")
+    
+    if not repo_id:
+        raise HTTPException(status_code=400, detail="repo_id is required")
+        
+    try:
+        hub = HubManager()
+        if repo_type == "model":
+            path = hub.download_model(repo_id)
+        else:
+            # For datasets, this is a mock since we usually want specific files
+            # But we'll just download the whole snapshot for demo
+            path = hub.download_model(repo_id) # Using same logic
+            
+        return {"status": "success", "message": f"Downloaded to {path}", "path": str(path)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+def parse_tags(raw: Optional[str]) -> list[str]:
+    if not raw:
+        return []
+    return [chunk.strip() for chunk in raw.split(",") if chunk.strip()]

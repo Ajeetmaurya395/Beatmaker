@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "stats": {
+    "genre_scores": {
+      "phonk": 1.0
+    },
+    "bpm_scores": {
+      "138": 1.0
+    },
+    "key_scores": {
+      "C# minor": 1.0
+    },
+    "energy_scores": {
+      "1.00": 1.0
+    },
+    "structure_scores": {},
+    "genre_structure_scores": {},
+    "sample_pack_scores": {},
+    "pattern_scores": {
+      "kick": {},
+      "snare": {},
+      "hats": {},
+      "perc": {},
+      "bass_808": {},
+      "chords": {},
+      "lead": {}
+    }
+  },
+  "avoids": {
+    "genre_scores": {},
+    "bpm_scores": {},
+    "key_scores": {},
+    "energy_scores": {},
+    "structure_scores": {},
+    "genre_structure_scores": {},
+    "sample_pack_scores": {},
+    "pattern_scores": {
+      "kick": {},
+      "snare": {},
+      "hats": {},
+      "perc": {},
+      "bass_808": {},
+      "chords": {},
+      "lead": {}
+    }
+  },
+  "history": [
+    {
+      "type": "reference",
+      "source": "tmp_reference.wav",
+      "summary": "tmp_reference.wav -> phonk, 138 BPM, C# minor, energy 1.00, 8.0s",
+      "source_kind": "file"
+    }
+  ]
+}

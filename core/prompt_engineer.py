@@ -4,6 +4,7 @@ import hashlib
 import random
 import re
 from dataclasses import dataclass
+from math import ceil
 
 from core.beat_spec import BeatSpec, Section
 from core.reference_analyzer import ReferenceProfile
@@ -71,6 +72,19 @@ class PromptEngineer:
                 ("outro", 4, 0.30),
             ),
         )),
+        (("aditya rikhari", "aditya", "rikhari", "hindi indie", "indie acoustic", "indie pop", "moody acoustic"), GenrePreset(
+            genre="hindi_indie",
+            bpm_range=(74, 96),
+            swing=0.16,
+            sections=(
+                ("intro", 4, 0.28),
+                ("verse", 8, 0.46),
+                ("hook", 8, 0.62),
+                ("verse", 8, 0.50),
+                ("hook", 8, 0.66),
+                ("outro", 4, 0.24),
+            ),
+        )),
         (("acoustic", "unplugged", "guitar", "folk"), GenrePreset(
             genre="lofi",
             bpm_range=(75, 100),
@@ -108,6 +122,18 @@ class PromptEngineer:
                 ("outro", 8, 0.32),
             ),
         )),
+        (("bollywood", "hindi", "desi", "indie hindi", "jhankar"), GenrePreset(
+            genre="bollywood",
+            bpm_range=(90, 115),
+            swing=0.15,
+            sections=(
+                ("alap", 4, 0.30),
+                ("mukhda", 8, 0.85),
+                ("antara", 8, 0.70),
+                ("mukhda", 8, 0.90),
+                ("outro", 4, 0.40),
+            ),
+        )),
     )
 
     def build_spec(
@@ -115,24 +141,47 @@ class PromptEngineer:
         prompt: str,
         bpm_override: int | None = None,
         seed: int | None = None,
+        deterministic: bool = False,
         total_bars_override: int | None = None,
         structure_override: str | None = None,
         reference_profile: ReferenceProfile | None = None,
         taste_profile: TasteProfileManager | None = None,
+        taste_strength: float = 0.35,
+        reference_mode: str = "inspire",
     ) -> BeatSpec:
         prompt_lower = prompt.lower()
-        stable_seed = seed if seed is not None else self._seed_from_prompt(prompt)
+        stable_seed = (
+            seed
+            if seed is not None
+            else self._seed_from_prompt(prompt)
+            if deterministic
+            else random.SystemRandom().randrange(1, 2**31 - 1)
+        )
         rng = random.Random(stable_seed)
+        taste_strength = max(0.0, min(1.0, taste_strength))
 
-        preset = self._detect_genre(prompt_lower, reference_profile, taste_profile, rng)
+        preset = self._detect_genre(
+            prompt_lower,
+            reference_profile,
+            taste_profile,
+            rng,
+            taste_strength,
+        )
         bpm = (
             bpm_override
             or self._extract_bpm(prompt_lower)
-            or (reference_profile.bpm if reference_profile else None)
-            or (taste_profile.preferred_bpm(rng) if taste_profile else None)
+            or self._reference_bpm(reference_profile, preset, rng, reference_mode)
+            or self._taste_bpm(taste_profile, rng, taste_strength, preset.genre)
             or rng.randint(*preset.bpm_range)
         )
-        key_root, scale = self._extract_key(prompt_lower, rng, reference_profile, taste_profile)
+        key_root, scale = self._extract_key(
+            prompt_lower,
+            rng,
+            reference_profile,
+            taste_profile,
+            taste_strength,
+            reference_mode,
+        )
         sections = self._resolve_sections(
             preset=preset,
             total_bars_override=total_bars_override,
@@ -140,8 +189,11 @@ class PromptEngineer:
             reference_profile=reference_profile,
             taste_profile=taste_profile,
             rng=rng,
+            taste_strength=taste_strength,
+            reference_mode=reference_mode,
+            bpm=bpm,
         )
-        learned_summary = self._learned_summary(taste_profile, preset.genre)
+        learned_summary = self._learned_summary(taste_profile, preset.genre, taste_strength, reference_mode)
 
         return BeatSpec(
             prompt=prompt.strip(),
@@ -163,6 +215,7 @@ class PromptEngineer:
         reference_profile: ReferenceProfile | None,
         taste_profile: TasteProfileManager | None,
         rng: random.Random,
+        taste_strength: float,
     ) -> GenrePreset:
         for keywords, preset in self.GENRE_PRESETS:
             if any(keyword in prompt for keyword in keywords):
@@ -171,7 +224,7 @@ class PromptEngineer:
             for keywords, preset in self.GENRE_PRESETS:
                 if reference_profile.genre_hint == preset.genre:
                     return preset
-        if taste_profile:
+        if taste_profile and rng.random() < taste_strength:
             preferred = taste_profile.preferred_genre(rng)
             if preferred:
                 for keywords, preset in self.GENRE_PRESETS:
@@ -214,6 +267,8 @@ class PromptEngineer:
         rng: random.Random,
         reference_profile: ReferenceProfile | None,
         taste_profile: TasteProfileManager | None,
+        taste_strength: float,
+        reference_mode: str,
     ) -> tuple[str, str]:
         compact_match = re.search(r"\b([a-gA-G])([#b]?)(maj|major|min|minor|m)\b", prompt)
         spaced_match = re.search(r"\b([a-gA-G])([#b]?)\s+(major|minor|maj|min)\b", prompt)
@@ -224,10 +279,10 @@ class PromptEngineer:
             mode = match.group(3).lower()
             return self._normalize_root(root), "major" if mode.startswith("maj") else "minor"
 
-        if reference_profile:
+        if reference_profile and reference_mode in {"inspire", "replicate"}:
             return reference_profile.key_root, reference_profile.scale
 
-        if taste_profile:
+        if taste_profile and rng.random() < taste_strength * 0.75:
             preferred = taste_profile.preferred_key(rng)
             if preferred:
                 return preferred
@@ -243,11 +298,20 @@ class PromptEngineer:
         reference_profile: ReferenceProfile | None,
         taste_profile: TasteProfileManager | None,
         rng: random.Random,
+        taste_strength: float,
+        reference_mode: str,
+        bpm: int,
     ) -> list[Section]:
         if structure_override:
             return self._parse_structure(structure_override)
 
-        if taste_profile:
+        if reference_profile and reference_mode == "replicate":
+            sections = [Section(name=name, bars=bars, energy=energy) for name, bars, energy in preset.sections]
+            approx_bars = self._approximate_reference_bars(reference_profile.duration_seconds, bpm)
+            sections = self._resize_sections(sections, total_bars_override or approx_bars)
+            return self._blend_reference_energy(sections, reference_profile, blend=0.55)
+
+        if taste_profile and rng.random() < taste_strength * 0.7:
             learned = taste_profile.preferred_structure(preset.genre, rng)
             if learned:
                 sections = self._parse_structure(learned.replace("|", ","))
@@ -317,11 +381,68 @@ class PromptEngineer:
             for section, bars in zip(sections, resized)
         ]
 
-    def _learned_summary(self, taste_profile: TasteProfileManager | None, genre: str) -> str | None:
+    def _learned_summary(
+        self,
+        taste_profile: TasteProfileManager | None,
+        genre: str,
+        taste_strength: float,
+        reference_mode: str,
+    ) -> str | None:
         if not taste_profile:
             return None
         summary = taste_profile.summary()
-        return f"{summary}, active_genre={genre}"
+        return f"{summary}, active_genre={genre}, taste_strength={taste_strength:.2f}, reference_mode={reference_mode}"
+
+    def _reference_bpm(
+        self,
+        reference_profile: ReferenceProfile | None,
+        preset: GenrePreset,
+        rng: random.Random,
+        reference_mode: str,
+    ) -> int | None:
+        if not reference_profile:
+            return None
+        if reference_mode == "replicate":
+            return reference_profile.bpm
+        offset = rng.choice([-6, -4, -2, 0, 2, 4, 6])
+        bpm = reference_profile.bpm + offset
+        return max(preset.bpm_range[0], min(preset.bpm_range[1], bpm))
+
+    def _taste_bpm(
+        self,
+        taste_profile: TasteProfileManager | None,
+        rng: random.Random,
+        taste_strength: float,
+        genre: str,
+    ) -> int | None:
+        if not taste_profile:
+            return None
+        effective_strength = taste_strength * 0.75
+        if genre == "hindi_indie":
+            effective_strength *= 0.1
+        if rng.random() >= effective_strength:
+            return None
+        return taste_profile.preferred_bpm(rng)
+
+    def _approximate_reference_bars(self, duration_seconds: float, bpm: int) -> int:
+        beats = max(8, ceil(duration_seconds / (60 / bpm)))
+        bars = max(8, ceil(beats / 4))
+        return max(8, min(64, int(round(bars / 4) * 4)))
+
+    def _blend_reference_energy(
+        self,
+        sections: list[Section],
+        reference_profile: ReferenceProfile,
+        blend: float,
+    ) -> list[Section]:
+        return [
+            Section(
+                name=section.name,
+                bars=section.bars,
+                energy=max(0.2, min(1.0, (section.energy * (1.0 - blend)) + (reference_profile.energy * blend))),
+            )
+            for section in sections
+        ]
 
     def _normalize_root(self, value: str) -> str:
         normalized = value[0].upper() + value[1:].lower()

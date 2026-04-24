@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "stats": {
+    "genre_scores": {},
+    "bpm_scores": {},
+    "key_scores": {},
+    "energy_scores": {},
+    "structure_scores": {},
+    "genre_structure_scores": {},
+    "sample_pack_scores": {},
+    "pattern_scores": {
+      "kick": {},
+      "snare": {},
+      "hats": {},
+      "perc": {},
+      "bass_808": {},
+      "chords": {},
+      "lead": {}
+    }
+  },
+  "avoids": {
+    "genre_scores": {},
+    "bpm_scores": {},
+    "key_scores": {},
+    "energy_scores": {},
+    "structure_scores": {},
+    "genre_structure_scores": {},
+    "sample_pack_scores": {},
+    "pattern_scores": {
+      "kick": {},
+      "snare": {},
+      "hats": {},
+      "perc": {},
+      "bass_808": {},
+      "chords": {},
+      "lead": {}
+    }
+  },
+  "history": []
+}

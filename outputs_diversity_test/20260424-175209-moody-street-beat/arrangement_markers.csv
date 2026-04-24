@@ -1,0 +1,6 @@
+name,start_bar,bars,energy
+intro,0,4,0.40
+hook,4,8,0.92
+verse,12,16,0.72
+hook,28,8,0.92
+outro,36,4,0.34

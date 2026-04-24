@@ -5,7 +5,10 @@ import sys
 from pathlib import Path
 
 from core.engine import BeatmakerEngine
+from core.drum_extractor import DrumPatternExtractor
+from core.pattern_library import PatternLibraryManager
 from core.reference_analyzer import ReferenceAnalyzer
+from core.reference_source import ReferenceSourceResolver
 from core.taste_profile import TasteProfileManager
 
 
@@ -24,6 +27,11 @@ def main() -> None:
     generate_parser.add_argument("--prompt", type=str, required=True, help="Describe the beat")
     generate_parser.add_argument("--bpm", type=int, help="Override the inferred BPM")
     generate_parser.add_argument("--seed", type=int, help="Optional seed for deterministic results")
+    generate_parser.add_argument(
+        "--deterministic",
+        action="store_true",
+        help="Use a prompt-derived seed when --seed is not provided",
+    )
     generate_parser.add_argument("--bars", type=int, help="Override total bars")
     generate_parser.add_argument(
         "--structure",
@@ -38,7 +46,25 @@ def main() -> None:
     generate_parser.add_argument(
         "--reference",
         type=str,
-        help="Path to a WAV reference track to influence BPM, key, scale, energy, and genre hint",
+        help="Local WAV path or a supported URL reference source",
+    )
+    generate_parser.add_argument(
+        "--reference-mode",
+        type=str,
+        default="inspire",
+        choices=("inspire", "replicate"),
+        help="Loosely guide from the reference or more closely clone its tempo/key/energy shape",
+    )
+    generate_parser.add_argument(
+        "--taste-strength",
+        type=float,
+        default=0.35,
+        help="How strongly your learned profile should bias generation, from 0.0 to 1.0",
+    )
+    generate_parser.add_argument(
+        "--tags",
+        type=str,
+        help="Optional comma-separated style tags such as 'aditya_rikhari_like,hindi_indie,moody'",
     )
     generate_parser.add_argument("--output-dir", type=str, default="outputs", help="Export bundle directory")
     generate_parser.add_argument("--data-dir", type=str, default="data", help="Learning/profile data directory")
@@ -48,7 +74,12 @@ def main() -> None:
         "--input",
         type=str,
         required=True,
-        help="A WAV file or a folder containing WAV files",
+        help="A WAV file, a folder containing WAV files, or a supported URL",
+    )
+    ingest_parser.add_argument(
+        "--tags",
+        type=str,
+        help="Comma-separated tags such as 'hindi_indie,moody,bolly_trap'",
     )
     ingest_parser.add_argument("--data-dir", type=str, default="data", help="Learning/profile data directory")
 
@@ -97,10 +128,14 @@ def main() -> None:
             prompt=args.prompt,
             bpm_override=args.bpm,
             seed=args.seed,
+            deterministic=args.deterministic,
             total_bars_override=args.bars,
             structure_override=args.structure,
             sample_pack_dir=Path(args.sample_pack).expanduser() if args.sample_pack else None,
-            reference_path=Path(args.reference).expanduser() if args.reference else None,
+            reference_path=args.reference,
+            taste_strength=args.taste_strength,
+            reference_mode=args.reference_mode,
+            tags=parse_tags(args.tags),
         )
 
         print("\n=== Beat Export Complete ===")
@@ -119,14 +154,25 @@ def main() -> None:
 
     if args.command == "ingest":
         manager = TasteProfileManager(data_root=Path(args.data_dir))
+        pattern_library = PatternLibraryManager(data_root=Path(args.data_dir))
         analyzer = ReferenceAnalyzer()
-        paths = expand_wavs(Path(args.input).expanduser())
+        drum_extractor = DrumPatternExtractor()
+        resolver = ReferenceSourceResolver(Path(args.data_dir) / "reference_cache")
+        tags = pattern_library.normalize_tags(parse_tags(args.tags))
+        if looks_like_url(args.input):
+            paths = [resolver.resolve(args.input)]
+        else:
+            paths = expand_wavs(Path(args.input).expanduser())
         if not paths:
-            raise SystemExit("No WAV files found to ingest.")
+            raise SystemExit("No reference sources found to ingest.")
         print(f"Ingesting {len(paths)} reference file(s)...")
         for path in paths:
-            summary = manager.ingest_reference(analyzer.analyze(path))
+            profile = analyzer.analyze(path)
+            summary = manager.ingest_reference(profile)
+            drum_pattern = drum_extractor.extract(path, bpm_hint=profile.bpm)
+            pattern_path = pattern_library.add_reference(profile, tags=tags, drum_pattern=drum_pattern)
             print(f"  - {summary}")
+            print(f"    pattern: {pattern_path}")
         print(manager.summary())
         return
 
@@ -164,6 +210,16 @@ def expand_wavs(path: Path) -> list[Path]:
     if not path.exists():
         return []
     return sorted(candidate for candidate in path.rglob("*.wav") if candidate.is_file())
+
+
+def looks_like_url(value: str) -> bool:
+    return value.startswith("http://") or value.startswith("https://")
+
+
+def parse_tags(raw: str | None) -> list[str]:
+    if not raw:
+        return []
+    return [chunk.strip() for chunk in raw.split(",") if chunk.strip()]
 
 
 if __name__ == "__main__":

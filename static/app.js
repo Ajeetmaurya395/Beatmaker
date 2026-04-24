@@ -34,7 +34,11 @@ const els = {
     loraUpload: document.getElementById('lora-upload'),
     loraFilesCount: document.getElementById('lora-files-count'),
     btnLoraSubmit: document.getElementById('btn-lora-submit'),
-    loraStatus: document.getElementById('lora-status')
+    loraStatus: document.getElementById('lora-status'),
+    hubRecs: document.getElementById('hub-recommendations'),
+    hubRepoId: document.getElementById('hub-repo-id'),
+    btnHubDownload: document.getElementById('btn-hub-download'),
+    hubStatus: document.getElementById('hub-status')
 };
 
 // Canvas context
@@ -45,6 +49,7 @@ async function init() {
     await fetchGenres();
     await fetchHistory();
     await fetchProfile();
+    await fetchHubRecommendations();
     
     els.form.addEventListener('submit', handleGenerate);
     els.btnPlay.addEventListener('click', togglePlay);
@@ -72,6 +77,11 @@ async function init() {
             els.loraFilesCount.innerText = `${count} file${count !== 1 ? 's' : ''} selected`;
         });
         els.loraForm.addEventListener('submit', handleLoraSubmit);
+    }
+
+    // Hub Download
+    if (els.btnHubDownload) {
+        els.btnHubDownload.addEventListener('click', handleHubDownload);
     }
 
     // Resize canvas
@@ -504,6 +514,57 @@ async function submitFeedback(rating) {
         alert('Feedback recorded!');
     } catch (e) {
         alert('Error saving feedback');
+    }
+}
+
+async function fetchHubRecommendations() {
+    try {
+        const res = await fetch(`${API_BASE}/hub/recommendations`);
+        const data = await res.json();
+        
+        els.hubRecs.innerHTML = data.recommendations.map(r => 
+            `<div class="chip" style="background: var(--surface); color: var(--text-light); font-size: 11px;" data-id="${r.id}">${r.name}</div>`
+        ).join('');
+
+        els.hubRecs.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                els.hubRepoId.value = chip.dataset.id;
+            });
+        });
+    } catch (e) {
+        console.error('Error fetching recommendations', e);
+    }
+}
+
+async function handleHubDownload() {
+    let repoId = els.hubRepoId.value.trim();
+    if (!repoId) return;
+
+    // Sanitize URL if pasted
+    if (repoId.includes('huggingface.co/')) {
+        repoId = repoId.split('huggingface.co/')[1].replace('datasets/', '');
+    }
+
+    els.hubStatus.style.display = 'block';
+    els.hubStatus.innerText = 'Connecting to Hugging Face Hub...';
+    els.btnHubDownload.disabled = true;
+
+    try {
+        const res = await fetch(`${API_BASE}/hub/download`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ repo_id: repoId })
+        });
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.detail || 'Download failed');
+        
+        els.hubStatus.innerText = 'Success! Model saved to your local models/ folder.';
+        setTimeout(() => { els.hubStatus.style.display = 'none'; }, 5000);
+    } catch (err) {
+        els.hubStatus.innerText = 'Error: ' + err.message;
+    } finally {
+        els.btnHubDownload.disabled = false;
     }
 }
 

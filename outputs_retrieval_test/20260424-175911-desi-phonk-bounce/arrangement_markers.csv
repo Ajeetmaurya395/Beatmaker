@@ -1,0 +1,6 @@
+name,start_bar,bars,energy
+intro,0,4,0.42
+drop,4,8,0.94
+variation,12,8,0.86
+drop,20,8,1.00
+outro,28,4,0.40

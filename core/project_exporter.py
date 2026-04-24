@@ -229,6 +229,11 @@ class ProjectExporter:
     def _bundle_dir(self, spec: BeatSpec) -> Path:
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         slug = re.sub(r"[^a-z0-9]+", "-", spec.prompt.lower()).strip("-")[:48] or "beat"
-        bundle_dir = self.output_root / f"{timestamp}-{slug}"
+        base = self.output_root / f"{timestamp}-{slug}"
+        bundle_dir = base
+        counter = 2
+        while bundle_dir.exists():
+            bundle_dir = self.output_root / f"{timestamp}-{slug}-{counter}"
+            counter += 1
         bundle_dir.mkdir(parents=True, exist_ok=True)
         return bundle_dir

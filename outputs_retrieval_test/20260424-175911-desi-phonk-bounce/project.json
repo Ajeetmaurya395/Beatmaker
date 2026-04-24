@@ -1,0 +1,183 @@
+{
+  "spec": {
+    "prompt": "desi phonk bounce",
+    "genre": "phonk",
+    "bpm": 139,
+    "key_root": "C#",
+    "scale": "minor",
+    "swing": 0.07,
+    "seed": 1793443947,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.42
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.94
+      },
+      {
+        "name": "variation",
+        "bars": 8,
+        "energy": 0.86
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 1.0
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.4
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=C# minor, structures=0, entries=1, active_genre=phonk, taste_strength=0.35, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.42
+    },
+    {
+      "name": "drop",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.94
+    },
+    {
+      "name": "variation",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.86
+    },
+    {
+      "name": "drop",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 1.0
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.4
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 162,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 45,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 416,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 376,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 115,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 135,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 120,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-24T17:59:31",
+  "render": {
+    "sample_pack": null,
+    "sample_pack_name": null,
+    "sample_pack_path": null,
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=C# minor, structures=0, entries=1, active_genre=phonk, taste_strength=0.35, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:4|drop:8|variation:8|drop:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,14,2,6": 3,
+        "0,10,14,6": 2,
+        "0,10,14,2": 1,
+        "0,10,14,2,3,6": 5,
+        "0,10,14,2,6": 14,
+        "0,1,10,14,2,6": 2,
+        "0,10,14,2,6,9": 1,
+        "0,10,14,15,2,6": 2,
+        "10,14,2,6": 1,
+        "0,10,2,6": 1
+      },
+      "snare": {
+        "10": 19,
+        "10,6": 4,
+        "1,10": 5,
+        "10,9": 4
+      },
+      "hats": {
+        "0c,10c,11c,13c,14c,15c,1c,2c,3c,5c,6c,7c,9c": 32
+      },
+      "perc": {
+        "1,10,11,13,14,15,2,3,6,7,9": 1,
+        "1,11,13,14,15,2,3,5,6,7,9": 1,
+        "10,11,13,14,15,2,3,5,6,7,9": 2,
+        "1,10,11,13,14,15,2,3,5,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,6,7,9": 24,
+        "1,10,11,13,14,2,3,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,6,9": 1,
+        "1,10,13,14,15,2,3,5,6,7,9": 1
+      },
+      "bass_808": {
+        "0.00/1.00,1.75/0.25,2.00/1.00": 4,
+        "0.00/1.25,2.00/0.90": 1,
+        "0.00/1.00,1.00/0.50,2.00/1.00": 2,
+        "0.00/1.00,1.75/0.25,2.00/1.00,3.00/0.75": 10,
+        "0.00/1.00,1.00/0.50,2.00/1.00,3.00/0.75": 8,
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 3,
+        "0.00/1.00,2.00/1.00,3.00/0.75": 1,
+        "0.00/1.00,2.00/1.00": 1,
+        "0.00/1.25,1.50/0.50,2.00/0.90": 2
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50": 6,
+        "0.00/3.50,0.00/3.50,0.00/3.50,2.00/3.50,2.00/3.50,2.00/3.50": 2,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 13,
+        "0.00/2.75,0.00/2.75,0.00/2.75,2.00/2.75,2.00/2.75,2.00/2.75": 11
+      },
+      "lead": {
+        "_": 8,
+        "0.25/0.40,1.00/0.40,2.00/0.40,2.75/0.40,3.50/0.40": 24
+      }
+    }
+  }
+}

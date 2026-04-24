@@ -24,6 +24,16 @@ class AudioRenderer:
         "lead": 0.26,
     }
 
+    HINDI_INDIE_CUES = (
+        "aditya rikhari",
+        "aditya",
+        "rikhari",
+        "hindi indie",
+        "indie acoustic",
+        "indie pop",
+        "moody acoustic",
+    )
+
     def render_stem(self, stem: str, events: list[NoteEvent], spec: BeatSpec, sample_pack: SamplePack | None = None) -> array:
         total_seconds = (spec.total_beats / spec.bpm) * 60 + 1.5
         total_samples = int(total_seconds * self.SAMPLE_RATE)
@@ -93,14 +103,15 @@ class AudioRenderer:
         sample_pack: SamplePack | None,
     ) -> array:
         duration_seconds = max(0.05, event.duration_beats * 60 / spec.bpm)
+        is_hindi_indie = self._is_hindi_indie(spec)
         if stem == "kick":
-            duration_seconds = min(0.55, max(0.22, duration_seconds))
+            duration_seconds = min(0.55, max(0.18 if is_hindi_indie else 0.22, duration_seconds))
         elif stem == "snare":
-            duration_seconds = min(0.28, max(0.12, duration_seconds))
+            duration_seconds = min(0.28, max(0.10 if is_hindi_indie else 0.12, duration_seconds))
         elif stem == "hats":
-            duration_seconds = 0.24 if event.pitch == 46 else 0.08
+            duration_seconds = 0.18 if is_hindi_indie else 0.24 if event.pitch == 46 else 0.08
         elif stem == "perc":
-            duration_seconds = 0.18
+            duration_seconds = 0.14 if is_hindi_indie else 0.18
 
         sample_count = max(1, int(duration_seconds * self.SAMPLE_RATE))
         if sample_pack and stem in {"kick", "snare", "hats", "perc"}:
@@ -159,11 +170,20 @@ class AudioRenderer:
     def _perc(self, event: NoteEvent, sample_count: int, spec: BeatSpec, index: int) -> array:
         rng = random.Random(spec.seed + index * 43 + event.pitch)
         audio = array("f")
+        prompt = spec.prompt.lower()
+        is_jhankar = any(word in prompt for word in ("bollywood", "hindi", "jhankar", "sizzle"))
+
         for sample_idx in range(sample_count):
             t = sample_idx / self.SAMPLE_RATE
-            noise = rng.uniform(-0.8, 0.8) * math.exp(-24 * t)
-            tone = math.sin(2 * math.pi * 660 * t) * math.exp(-18 * t)
-            audio.append((tone * 0.35) + (noise * 0.25))
+            if is_jhankar:
+                # Jhankar sizzle - bright noise with high-freq tone
+                noise = rng.uniform(-1.0, 1.0) * math.exp(-32 * t)
+                tone = math.sin(2 * math.pi * 1200 * t) * math.exp(-25 * t)
+                audio.append((noise * 0.6 + tone * 0.4) * 0.8)
+            else:
+                noise = rng.uniform(-0.8, 0.8) * math.exp(-24 * t)
+                tone = math.sin(2 * math.pi * 660 * t) * math.exp(-18 * t)
+                audio.append((tone * 0.35) + (noise * 0.25))
         return audio
 
     def _bass_808(self, event: NoteEvent, sample_count: int, spec: BeatSpec, index: int) -> array:
@@ -171,10 +191,28 @@ class AudioRenderer:
         audio = array("f")
         prompt = spec.prompt.lower()
         is_soft = any(word in prompt for word in ("lofi", "acoustic", "chill", "jazz", "mellow"))
+        is_desi = any(word in prompt for word in ("bollywood", "hindi", "desi", "tabla"))
+        is_hindi_indie = self._is_hindi_indie(spec)
 
         for sample_idx in range(sample_count):
             t = sample_idx / self.SAMPLE_RATE
-            if is_soft:
+            if is_hindi_indie:
+                attack = min(1.0, t / 0.03)
+                env = attack * math.exp(-4.8 * t)
+                wave_value = math.sin(2 * math.pi * freq * t)
+                wave_value += 0.06 * math.sin(2 * math.pi * freq * 2 * t)
+                audio.append(wave_value * env * 0.62)
+            elif is_desi:
+                # Tabla-style 808 slide (Bayan deep slide)
+                attack = min(1.0, t / 0.02)
+                env = attack * math.exp(-3.2 * t)
+                # Fast initial pitch bend for the 'bayan' swipe effect
+                bend = freq * (1.0 + 0.45 * math.exp(-12 * t))
+                wave_value = math.sin(2 * math.pi * bend * t)
+                # Dayan-style higher harmonic ring at start
+                wave_value += 0.15 * math.sin(2 * math.pi * bend * 4.5 * t) * math.exp(-35 * t)
+                audio.append(math.tanh(wave_value * env * 1.5))
+            elif is_soft:
                 # Warm upright/muted bass — slow attack, gentle decay, no pitch bend
                 attack = min(1.0, t / 0.03)
                 env = attack * math.exp(-4.5 * t)
@@ -199,11 +237,29 @@ class AudioRenderer:
         
         is_acoustic = any(word in prompt for word in ("acoustic", "guitar", "piano", "pluck"))
         is_lofi = any(word in prompt for word in ("lofi", "chill", "jazz", "rhodes"))
+        is_desi = any(word in prompt for word in ("bollywood", "hindi", "desi", "harmonium", "drone"))
+        is_hindi_indie = self._is_hindi_indie(spec)
 
         for sample_idx in range(sample_count):
             t = sample_idx / self.SAMPLE_RATE
             
-            if is_acoustic:
+            if is_hindi_indie:
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.004, 0.28, 0.14, 0.36)
+                fundamental = math.sin(2 * math.pi * freq * t)
+                overtone = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-14 * t)
+                pick = math.sin(2 * math.pi * freq * 4 * t) * math.exp(-28 * t)
+                sample = (fundamental * 0.55 + overtone * 0.22 + pick * 0.16) * env * 0.85
+            elif is_desi:
+                # Harmonium-style reed texture
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.08, 0.1, 0.8, 0.4)
+                # Reeds are square-ish
+                sig = 0.0
+                for i in (1, 2, 3): # odd harmonics
+                    sig += (math.sin(2 * math.pi * freq * i * t) / (i * 1.2))
+                # Soft tremolo for that hand-pumped feel
+                tremolo = 1.0 + 0.12 * math.sin(2 * math.pi * 3.5 * t)
+                sample = sig * env * tremolo * 0.5
+            elif is_acoustic:
                 env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.01, 0.4, 0.1, 0.3)
                 fundamental = math.sin(2 * math.pi * freq * t)
                 harmonics = sum(math.sin(2 * math.pi * freq * i * t) / i for i in range(2, 6)) * math.exp(-15 * t)
@@ -230,11 +286,29 @@ class AudioRenderer:
         
         is_acoustic = any(word in prompt for word in ("acoustic", "guitar", "piano", "pluck"))
         is_lofi = any(word in prompt for word in ("lofi", "chill", "jazz", "rhodes"))
+        is_desi = any(word in prompt for word in ("bollywood", "hindi", "desi", "string", "jhankar"))
+        is_hindi_indie = self._is_hindi_indie(spec)
 
         for sample_idx in range(sample_count):
             t = sample_idx / self.SAMPLE_RATE
             
-            if is_acoustic:
+            if is_hindi_indie:
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.05, 0.12, 0.42, 0.28)
+                vib = 1 + (0.006 * math.sin(2 * math.pi * 4.1 * t))
+                fundamental = math.sin(2 * math.pi * freq * vib * t)
+                breath = math.sin(2 * math.pi * freq * 2 * t) * 0.08
+                sample = (fundamental * 0.5 + breath) * env * 0.65
+            elif is_desi:
+                # Bollywood ensemble strings - rich and sweeping
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.12, 0.2, 0.85, 0.5)
+                vib = 1.0 + 0.012 * math.sin(2 * math.pi * 4.8 * t)
+                # Stacked saws for that orchestral texture
+                sample = 0.0
+                for detune in (0.994, 1.0, 1.006):
+                    wave_val = (freq * detune * vib * t) % 1.0
+                    sample += (wave_val * 2.0 - 1.0)
+                sample = (sample / 3.0) * env * 0.45
+            elif is_acoustic:
                 env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.01, 0.2, 0.05, 0.2)
                 fundamental = math.sin(2 * math.pi * freq * t)
                 string_overtone = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-20 * t)
@@ -289,3 +363,7 @@ class AudioRenderer:
 
     def _midi_to_hz(self, midi_note: int) -> float:
         return 440.0 * (2 ** ((midi_note - 69) / 12))
+
+    def _is_hindi_indie(self, spec: BeatSpec) -> bool:
+        prompt = spec.prompt.lower()
+        return spec.genre == "hindi_indie" or any(cue in prompt for cue in self.HINDI_INDIE_CUES)

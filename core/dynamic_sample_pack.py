@@ -69,6 +69,20 @@ GENRE_RECIPES: dict[str, dict[str, dict]] = {
         "hats_open": {"decay": 10, "brightness": 0.65, "dur": 0.35},
         "perc": {"freq": 600, "decay": 15, "noise_mix": 0.50, "dur": 0.15},
     },
+    "hindi_indie": {
+        "kick": {"freq_start": 102, "freq_end": 62, "decay": 11.5, "click": 0.16, "dist": 0.72, "dur": 0.34},
+        "snare": {"tone_freq": 215, "tone_decay": 17, "noise_decay": 14, "noise_mix": 0.52, "dur": 0.24},
+        "hats_closed": {"decay": 26, "brightness": 0.52, "dur": 0.07},
+        "hats_open": {"decay": 12, "brightness": 0.48, "dur": 0.22},
+        "perc": {"freq": 520, "decay": 17, "noise_mix": 0.45, "dur": 0.16},
+    },
+    "bollywood": {
+        "kick": {"freq_start": 145, "freq_end": 35, "decay": 9.5, "click": 0.15, "dist": 1.25, "dur": 0.54},
+        "snare": {"tone_freq": 215, "tone_decay": 16, "noise_decay": 24, "noise_mix": 0.76, "dur": 0.23},
+        "hats_closed": {"decay": 62, "brightness": 0.94, "dur": 0.05},
+        "hats_open": {"decay": 15, "brightness": 0.86, "dur": 0.30},
+        "perc": {"freq": 680, "decay": 28, "noise_mix": 0.25, "dur": 0.20},
+    },
 }
 
 SAMPLE_RATE = 44_100

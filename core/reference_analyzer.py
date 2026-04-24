@@ -10,18 +10,22 @@ from pathlib import Path
 @dataclass(frozen=True)
 class ReferenceProfile:
     source_path: Path
+    source_kind: str
+    duration_seconds: float
     bpm: int
     key_root: str
     scale: str
     energy: float
     brightness: float
     genre_hint: str
+    groove_steps: list[int]
+    backbeat_steps: list[int]
 
     @property
     def summary(self) -> str:
         return (
             f"{self.source_path.name} -> {self.genre_hint}, {self.bpm} BPM, "
-            f"{self.key_root} {self.scale}, energy {self.energy:.2f}"
+            f"{self.key_root} {self.scale}, energy {self.energy:.2f}, {self.duration_seconds:.1f}s"
         )
 
 
@@ -43,12 +47,16 @@ class ReferenceAnalyzer:
         genre_hint = self._infer_genre(bpm, brightness, energy)
         return ReferenceProfile(
             source_path=path,
+            source_kind="file",
+            duration_seconds=len(samples) / sample_rate,
             bpm=bpm,
             key_root=key_root,
             scale=scale,
             energy=energy,
             brightness=brightness,
             genre_hint=genre_hint,
+            groove_steps=self._estimate_groove_steps(samples, sample_rate, bpm),
+            backbeat_steps=self._estimate_backbeat_steps(samples, sample_rate, bpm),
         )
 
     def _read_wav_mono(self, path: Path) -> tuple[list[float], int]:
@@ -187,3 +195,28 @@ class ReferenceAnalyzer:
         if bpm <= 100:
             return "boom_bap"
         return "trap"
+
+    def _estimate_groove_steps(self, samples: list[float], sample_rate: int, bpm: int) -> list[int]:
+        bar_seconds = 4 * (60 / bpm)
+        analysis_seconds = min(len(samples) / sample_rate, bar_seconds * 4)
+        if analysis_seconds <= 0:
+            return [0, 4, 8, 12]
+        analysis_samples = samples[: int(analysis_seconds * sample_rate)]
+        step_count = 16
+        step_energy = []
+        for step in range(step_count):
+            start_time = (analysis_seconds / step_count) * step
+            end_time = (analysis_seconds / step_count) * (step + 1)
+            start = int(start_time * sample_rate)
+            end = max(start + 1, int(end_time * sample_rate))
+            segment = analysis_samples[start:end]
+            energy = sum(sample * sample for sample in segment) / len(segment)
+            step_energy.append(energy)
+        threshold = max(step_energy) * 0.55 if step_energy else 0.0
+        active = [idx for idx, energy in enumerate(step_energy) if energy >= threshold]
+        return active or [0, 4, 8, 12]
+
+    def _estimate_backbeat_steps(self, samples: list[float], sample_rate: int, bpm: int) -> list[int]:
+        groove = self._estimate_groove_steps(samples, sample_rate, bpm)
+        candidates = [step for step in groove if step in {4, 10, 12}]
+        return candidates or [4, 12]

@@ -1,0 +1,180 @@
+{
+  "spec": {
+    "prompt": "moody hindi indie bounce",
+    "genre": "bollywood",
+    "bpm": 108,
+    "key_root": "C#",
+    "scale": "minor",
+    "swing": 0.15,
+    "seed": 1763086504,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "alap",
+        "bars": 4,
+        "energy": 0.3
+      },
+      {
+        "name": "mukhda",
+        "bars": 8,
+        "energy": 0.85
+      },
+      {
+        "name": "antara",
+        "bars": 8,
+        "energy": 0.7
+      },
+      {
+        "name": "mukhda",
+        "bars": 8,
+        "energy": 0.9
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.4
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=C# minor, structures=0, entries=1, active_genre=bollywood, taste_strength=0.35, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "alap",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.3
+    },
+    {
+      "name": "mukhda",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.85
+    },
+    {
+      "name": "antara",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.7
+    },
+    {
+      "name": "mukhda",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.9
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.4
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 158,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 40,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 512,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 376,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 115,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 153,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 96,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-24T18:13:31",
+  "render": {
+    "sample_pack": null,
+    "sample_pack_name": null,
+    "sample_pack_path": null,
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=C# minor, structures=0, entries=1, active_genre=bollywood, taste_strength=0.35, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "alap:4|mukhda:8|antara:8|mukhda:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,14,2,6": 2,
+        "0,10,14,6": 1,
+        "10,14,2,6": 2,
+        "0,10,14,2": 2,
+        "0,10,14,2,6": 18,
+        "0,10,14,2,6,9": 1,
+        "0,1,10,14,2,6": 2,
+        "0,10,14,2,3,6": 2,
+        "0,10,14,15,2,6": 1,
+        "0,10,2,6": 1
+      },
+      "snare": {
+        "10": 24,
+        "10,15": 3,
+        "10,9": 2,
+        "1,10": 2,
+        "10,3": 1
+      },
+      "hats": {
+        "0c,10c,11c,12c,13c,14c,15c,1c,2c,3c,4c,5c,6c,7c,8c,9c": 32
+      },
+      "perc": {
+        "1,10,11,13,14,15,2,3,5,6,9": 1,
+        "1,10,11,13,14,15,2,3,6,7,9": 2,
+        "1,10,13,14,15,2,3,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,6,7,9": 24,
+        "1,10,11,13,14,15,3,5,6,7,9": 1,
+        "1,11,13,14,15,2,3,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,5,6,7,9": 2
+      },
+      "bass_808": {
+        "0.00/1.00,1.00/0.50,2.00/1.00": 4,
+        "0.00/1.25,2.00/0.90": 1,
+        "0.00/1.00,1.00/0.50,2.00/1.00,3.00/0.75": 8,
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 12,
+        "0.00/1.25,2.00/0.90,3.25/0.50": 2,
+        "0.00/1.25,1.50/0.50,2.00/0.90": 5
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50": 7,
+        "0.00/3.50,0.00/3.50,0.00/3.50,2.00/3.50,2.00/3.50,2.00/3.50": 9,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 6,
+        "0.00/2.75,0.00/2.75,0.00/2.75,2.00/2.75,2.00/2.75,2.00/2.75": 10
+      },
+      "lead": {
+        "_": 8,
+        "0.50/0.75,1.50/0.75,2.50/0.75,3.00/0.75": 24
+      }
+    }
+  }
+}
