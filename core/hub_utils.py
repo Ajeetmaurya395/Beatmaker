@@ -55,7 +55,9 @@ def get_indie_recommendations():
     Returns a list of high-quality Indian/Indie resources on Hugging Face.
     """
     return [
-        {"name": "Bhavvani Indian Audio", "id": "sarvamai/bhavvani", "type": "dataset"},
-        {"name": "Hindi Audio Collection", "id": "google/fleurs", "type": "dataset"},
-        {"name": "Desi LoRA (ACE-Step 1.5)", "id": "community/desi-step-v1", "type": "model"}
+        {"name": "Bhavvani Indian Audio (Sarvam AI)", "id": "sarvamai/bhavvani", "type": "dataset"},
+        {"name": "Song Describer Dataset", "id": "renumics/song-describer-dataset", "type": "dataset"},
+        {"name": "ACE-Step 1.5 Base Checkpoint", "id": "acestep/ace-step-1.5", "type": "model"},
+        {"name": "Desi Soul LoRA (Community Edition)", "id": "community/desi-step-v1", "type": "model"},
+        {"name": "Indian Classical Instruments (Kaggle Port)", "id": "sushil/indian-instruments", "type": "dataset"}
     ]

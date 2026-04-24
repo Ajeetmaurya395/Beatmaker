@@ -313,7 +313,7 @@ async function loadBundle(bundleId) {
 }
 
 async function loadAudioBuffer(bundleId, stem) {
-    const res = await fetch(`${API_BASE}/bundles/${bundleId}/audio/${stem}`);
+    const res = await fetch(`${API_BASE}/bundles/${bundleId}/audio/${stem}?t=${Date.now()}`);
     const arrayBuffer = await res.arrayBuffer();
     return await audioCtx.decodeAudioData(arrayBuffer);
 }

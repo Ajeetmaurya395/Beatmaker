@@ -10,7 +10,8 @@ A high-fidelity, intelligent music production studio designed specifically for t
 - **Traditional Structures**: Arrangement logic that understands **Alap**, **Mukhda**, and **Antara**.
 
 ### ⚡ Cloud-First Intelligence (Lightning AI)
-- **Hugging Face Indie Hub**: Natively download and ingest datasets (like `sarvamai/bhavvani`) and models directly from the community.
+- **Hugging Face Indie Hub**: Natively download and ingest datasets like **Song Describer** and checkpoints like **ACE-Step 1.5** directly from the community.
+- **ACE-Step Architecture**: Optimized for the **LM Planner + DiT Voice** hybrid model, ensuring arrangement structures follow professional multi-track planning.
 - **Cloud LoRA Training**: Offload heavy GPU training (Demucs stem extraction + DiT fine-tuning) to Lightning AI Studios with one click.
 - **DPO (Reinforcement Learning)**: Passively collect your "Like/Dislike" feedback into a local `dpo_pairs.jsonl` dataset and align the model's brain via RLHF in the cloud.
 

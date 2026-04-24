@@ -249,6 +249,10 @@ class AudioRenderer:
         audio = array("f")
         prompt = spec.prompt.lower()
         
+        # Adjective detection for dynamic synthesis tuning
+        is_bright = "bright" in prompt or "sharp" in prompt or "digital" in prompt
+        is_dark = "dark" in prompt or "warm" in prompt or "soft" in prompt or "muffled" in prompt
+        
         is_acoustic = any(word in prompt for word in ("acoustic", "guitar", "piano", "pluck"))
         is_lofi = any(word in prompt for word in ("lofi", "chill", "jazz", "rhodes"))
         is_desi = any(word in prompt for word in ("bollywood", "hindi", "desi", "harmonium", "drone"))
@@ -258,12 +262,12 @@ class AudioRenderer:
             t = sample_idx / self.SAMPLE_RATE
             
             if is_hindi_indie:
-                # Warm nylon acoustic guitar — slow rounded attack, no sharp transient
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.06, 0.35, 0.55, 0.50)
+                # Warm nylon acoustic guitar
+                attack = 0.12 if is_dark else 0.03 if is_bright else 0.06
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, attack, 0.35, 0.55, 0.50)
                 fundamental = math.sin(2 * math.pi * freq * t)
-                # Soft even harmonics for body warmth (not odd harmonics which sound sharp)
-                h2 = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-5 * t) * 0.18
-                h3 = math.sin(2 * math.pi * freq * 3 * t) * math.exp(-8 * t) * 0.06
+                h2 = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-5 * t) * (0.12 if is_bright else 0.18)
+                h3 = math.sin(2 * math.pi * freq * 3 * t) * math.exp(-8 * t) * (0.02 if is_dark else 0.06)
                 sample = (fundamental * 0.65 + h2 + h3) * env * 0.7
             elif is_desi:
                 # Harmonium-style reed texture
@@ -300,6 +304,9 @@ class AudioRenderer:
         audio = array("f")
         prompt = spec.prompt.lower()
         
+        is_shimmer = "shimmer" in prompt or "bright" in prompt or "digital" in prompt
+        is_drone = "drone" in prompt or "long" in prompt or "slow" in prompt
+        
         is_acoustic = any(word in prompt for word in ("acoustic", "guitar", "piano", "pluck"))
         is_lofi = any(word in prompt for word in ("lofi", "chill", "jazz", "rhodes"))
         is_desi = any(word in prompt for word in ("bollywood", "hindi", "desi", "string", "jhankar"))
@@ -309,11 +316,15 @@ class AudioRenderer:
             t = sample_idx / self.SAMPLE_RATE
             
             if is_hindi_indie:
-                # Ultra-soft background pad — barely audible texture behind the guitar
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.25, 0.3, 0.35, 0.6)
-                # Pure sine with very slow vibrato for a warm ambient wash
-                vib = 1 + (0.003 * math.sin(2 * math.pi * 2.0 * t))
+                # Ultra-soft background pad
+                attack = 0.6 if is_drone else 0.25
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, attack, 0.3, 0.35, 0.6)
+                vib_freq = 0.5 if is_drone else 4.5 if is_shimmer else 2.0
+                vib = 1 + (0.003 * math.sin(2 * math.pi * vib_freq * t))
                 fundamental = math.sin(2 * math.pi * freq * vib * t)
+                if is_shimmer:
+                    # Add airy overtone
+                    fundamental += 0.05 * math.sin(2 * math.pi * freq * 4 * t)
                 sample = fundamental * env * 0.25
             elif is_desi:
                 # Bollywood ensemble strings - rich and sweeping
