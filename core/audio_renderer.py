@@ -24,6 +24,17 @@ class AudioRenderer:
         "lead": 0.26,
     }
 
+    # Hindi Indie: guitar/piano carries emotion, lead is a ghost pad, drums are gentle
+    STEM_GAIN_HINDI_INDIE = {
+        "kick": 0.55,
+        "snare": 0.40,
+        "hats": 0.18,
+        "perc": 0.14,
+        "bass_808": 0.60,
+        "chords": 0.72,
+        "lead": 0.08,
+    }
+
     HINDI_INDIE_CUES = (
         "aditya rikhari",
         "aditya",
@@ -39,6 +50,9 @@ class AudioRenderer:
         total_samples = int(total_seconds * self.SAMPLE_RATE)
         buffer = array("f", [0.0]) * total_samples
 
+        gain_table = self.STEM_GAIN_HINDI_INDIE if self._is_hindi_indie(spec) else self.STEM_GAIN
+        stem_gain = gain_table.get(stem, 0.35)
+
         for index, event in enumerate(events):
             start_sample = max(0, int((event.start_beat / spec.bpm) * 60 * self.SAMPLE_RATE))
             samples = self._render_event(stem, event, spec, index, sample_pack)
@@ -46,7 +60,7 @@ class AudioRenderer:
                 buffer_index = start_sample + offset
                 if buffer_index >= total_samples:
                     break
-                buffer[buffer_index] += sample * self.STEM_GAIN.get(stem, 0.35)
+                buffer[buffer_index] += sample * stem_gain
 
         self._normalize(buffer, ceiling=0.92)
         return buffer
@@ -244,11 +258,13 @@ class AudioRenderer:
             t = sample_idx / self.SAMPLE_RATE
             
             if is_hindi_indie:
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.004, 0.28, 0.14, 0.36)
+                # Warm nylon acoustic guitar — slow rounded attack, no sharp transient
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.06, 0.35, 0.55, 0.50)
                 fundamental = math.sin(2 * math.pi * freq * t)
-                overtone = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-14 * t)
-                pick = math.sin(2 * math.pi * freq * 4 * t) * math.exp(-28 * t)
-                sample = (fundamental * 0.55 + overtone * 0.22 + pick * 0.16) * env * 0.85
+                # Soft even harmonics for body warmth (not odd harmonics which sound sharp)
+                h2 = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-5 * t) * 0.18
+                h3 = math.sin(2 * math.pi * freq * 3 * t) * math.exp(-8 * t) * 0.06
+                sample = (fundamental * 0.65 + h2 + h3) * env * 0.7
             elif is_desi:
                 # Harmonium-style reed texture
                 env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.08, 0.1, 0.8, 0.4)
@@ -293,11 +309,12 @@ class AudioRenderer:
             t = sample_idx / self.SAMPLE_RATE
             
             if is_hindi_indie:
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.05, 0.12, 0.42, 0.28)
-                vib = 1 + (0.006 * math.sin(2 * math.pi * 4.1 * t))
+                # Ultra-soft background pad — barely audible texture behind the guitar
+                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.25, 0.3, 0.35, 0.6)
+                # Pure sine with very slow vibrato for a warm ambient wash
+                vib = 1 + (0.003 * math.sin(2 * math.pi * 2.0 * t))
                 fundamental = math.sin(2 * math.pi * freq * vib * t)
-                breath = math.sin(2 * math.pi * freq * 2 * t) * 0.08
-                sample = (fundamental * 0.5 + breath) * env * 0.65
+                sample = fundamental * env * 0.25
             elif is_desi:
                 # Bollywood ensemble strings - rich and sweeping
                 env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.12, 0.2, 0.85, 0.5)
