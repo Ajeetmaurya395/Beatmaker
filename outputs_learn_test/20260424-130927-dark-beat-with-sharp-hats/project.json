@@ -1,0 +1,181 @@
+{
+  "spec": {
+    "prompt": "dark beat with sharp hats",
+    "genre": "phonk",
+    "bpm": 138,
+    "key_root": "C#",
+    "scale": "minor",
+    "swing": 0.07,
+    "seed": 2755690995,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.4
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "verse",
+        "bars": 16,
+        "energy": 0.72
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": "tmp_reference.wav -> phonk, 138 BPM, C# minor, energy 1.00",
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=C# minor, structures=0, entries=1, active_genre=phonk"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.4
+    },
+    {
+      "name": "hook",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "verse",
+      "start_bar": 12,
+      "bars": 16,
+      "energy": 0.72
+    },
+    {
+      "name": "hook",
+      "start_bar": 28,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "outro",
+      "start_bar": 36,
+      "bars": 4,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 216,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 120,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 410,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 163,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 152,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 120,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 160,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-24T13:16:56",
+  "render": {
+    "sample_pack": "tmp_sample_pack (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "tmp_sample_pack",
+    "reference_summary": "tmp_reference.wav -> phonk, 138 BPM, C# minor, energy 1.00",
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=C# minor, structures=0, entries=1, active_genre=phonk",
+    "sample_pack_path": "tmp_sample_pack"
+  },
+  "analysis": {
+    "structure_signature": "intro:4|hook:8|verse:16|hook:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,10,12,4,8": 24,
+        "0,10,12,14,4,8": 7,
+        "0,10,12,15,4,8": 4,
+        "0,10,12,3,4,8": 5
+      },
+      "snare": {
+        "10,12,4": 40
+      },
+      "hats": {
+        "0c,10c,11o,12c,14c,15c,16c,2c,4c,6c,7c,8c": 5,
+        "10c,11o,12c,14c,15c,2c,4c,6c,7c,8c": 5,
+        "0c,10c,12c,14c,15c,2c,4c,6c,7c,8c": 14,
+        "0c,10c,12c,14c,15c,16c,2c,4c,6c,7c,8c": 3,
+        "10c,12c,14c,15c,16c,2c,4c,6c,7c,8c": 4,
+        "10c,12c,14c,15c,2c,4c,6c,7c,8c": 2,
+        "0c,10c,12c,14c,2c,4c,6c,8c": 1,
+        "10c,12c,14c,2c,4c,6c,7c,8c": 2,
+        "10c,11o,12c,14c,15c,16c,2c,4c,6c,7c,8c": 1,
+        "0c,10c,11o,12c,14c,15c,2c,4c,6c,7c,8c": 2,
+        "0c,10c,12c,14c,15c,16c,2c,4c,5c,6c,7c,8c": 1
+      },
+      "perc": {
+        "11,3,7": 8,
+        "11,13,15,3,7": 2,
+        "11,15,3,5,7": 2,
+        "11,15,3,7": 21,
+        "1,11,15,3,7": 4,
+        "11,15,3,7,9": 3
+      },
+      "bass_808": {
+        "0.00/1.25,1.50/0.50,2.00/0.90": 8,
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 32
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50": 24,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 16
+      },
+      "lead": {
+        "_": 8,
+        "0.25/0.40,1.00/0.40,2.00/0.40,2.75/0.40,3.50/0.40": 32
+      }
+    }
+  },
+  "history": [
+    {
+      "type": "regen",
+      "stem": "hats",
+      "variation": "high",
+      "timestamp": "2026-04-24T13:16:56"
+    }
+  ]
+}

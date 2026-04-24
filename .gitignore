@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.whl
+*.mp3
+*.wav
+outputs_test/
+data_test/dpo_pairs.jsonl
+server.pid
+server.log
+models/
+cache/
+stems/
+.DS_Store

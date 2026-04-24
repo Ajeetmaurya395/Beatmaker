@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beatmaker Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="brand">Beatmaker Studio</div>
+        <div class="caption">Powered by ACE-Step Engine</div>
+    </header>
+
+    <main>
+        <!-- Left Panel: Generator -->
+        <aside>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Generate New Beat</h2>
+                </div>
+                
+                <form id="generate-form">
+                    <div class="form-group">
+                        <label>Vibe / Prompt</label>
+                        <input type="text" id="prompt" placeholder="e.g. moody drill beat with heavy 808s" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Genre Hint</label>
+                        <div class="chip-group" id="genre-chips">
+                            <!-- Populated by JS -->
+                        </div>
+                        <input type="hidden" id="genre">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label>BPM (Optional)</label>
+                            <input type="number" id="bpm" placeholder="Auto" min="60" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label>Bars (Optional)</label>
+                            <input type="number" id="bars" placeholder="Auto" min="4" max="64" step="4">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Seed (Optional)</label>
+                        <input type="number" id="seed" placeholder="Random" class="mono">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="btn-submit">
+                        Spawn Beat
+                    </button>
+                </form>
+
+                <div id="loader">
+                    <div class="spinner"></div>
+                    <p class="caption">Synthesizing dynamic samples & arranging stems...</p>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-header">
+                    <h3>Taste Profile</h3>
+                </div>
+                <div id="profile-summary" class="caption">Loading...</div>
+                <div class="upload-container">
+                    <label for="reference-upload" class="btn btn-secondary" style="display: block; text-align: center; margin-top: 16px; cursor: pointer;">
+                        🎵 Ingest Heuristics
+                    </label>
+                    <input type="file" id="reference-upload" accept=".wav" style="display: none;">
+                    <button class="btn btn-primary" id="btn-rlhf-align" style="display: block; width: 100%; text-align: center; margin-top: 8px; cursor: pointer; background-color: var(--accent); color: #000;">
+                        🤖 Align LM (RLHF)
+                    </button>
+                    <div id="upload-status" class="caption" style="display: none; margin-top: 8px; text-align: center; color: var(--accent);">Uploading...</div>
+                </div>
+            </div>
+
+            <!-- Newly Added LoRA Studio -->
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-header">
+                    <h3>LoRA Cloud Training</h3>
+                </div>
+                <div class="caption">Fine-tune a neural network (DiT) on Lightning AI using Demucs stem extraction. Upload a dataset of reference beats to clone their vibe.</div>
+                
+                <form id="lora-form" style="margin-top: 16px;">
+                    <div class="form-group">
+                        <label>LoRA Style Name</label>
+                        <input type="text" id="lora-name" placeholder="e.g. metro_boomin_drums" required>
+                    </div>
+                    
+                    <div class="upload-container">
+                        <label for="lora-upload" class="btn btn-secondary" style="display: block; text-align: center; cursor: pointer;">
+                            📁 Select Dataset (.wav)
+                        </label>
+                        <input type="file" id="lora-upload" accept=".wav" multiple style="display: none;" required>
+                        <div id="lora-files-count" class="caption" style="margin-top: 8px; text-align: center;">0 files selected</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="btn-lora-submit" style="margin-top: 16px; width: 100%;">
+                        Start Cloud Training
+                    </button>
+                    
+                    <div id="lora-status" class="caption" style="display: none; margin-top: 8px; text-align: center; color: var(--accent);">Uploading and initializing Lightning Job...</div>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Right Panel: Player & Library -->
+        <section>
+            <!-- Player Widget -->
+            <div class="card player-container" id="player-card" style="display: none;">
+                <div class="now-playing-header">
+                    <div>
+                        <h2 id="np-title">Beat Title</h2>
+                        <div class="caption mono" id="np-meta">140 BPM • C# minor</div>
+                    </div>
+                </div>
+
+                <div class="waveform-container">
+                    <canvas id="waveform"></canvas>
+                </div>
+
+                <div class="playback-controls">
+                    <button class="btn-icon" id="btn-stop">⏹</button>
+                    <button class="btn-play" id="btn-play">▶</button>
+                    <button class="btn-icon" id="btn-loop">🔁</button>
+                </div>
+
+                <div class="stems-list" id="stems-container">
+                    <!-- Stem tracks injected here by JS -->
+                </div>
+
+                <div class="feedback-container">
+                    <button class="btn-feedback favorite" data-fb="favorite">🔥 Favorite</button>
+                    <button class="btn-feedback like" data-fb="like">👍 Like</button>
+                    <button class="btn-feedback skip" data-fb="skip">⏭ Skip</button>
+                    <button class="btn-feedback dislike" data-fb="dislike">👎 Dislike</button>
+                </div>
+            </div>
+
+            <!-- Library -->
+            <div>
+                <h3 style="margin: 32px 0 16px;">Recent Generations</h3>
+                <div class="history-grid" id="history-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Web Audio API setup and logic -->
+<script src="/static/app.js"></script>
+</body>
+</html>
