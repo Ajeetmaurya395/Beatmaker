@@ -138,6 +138,56 @@ async def rate_bundle(bundle_id: str, req: RateRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+class StemTweakRequest(BaseModel):
+    stem: str
+    prompt_hint: Optional[str] = None
+    variation: str = "medium"  # low, medium, high
+
+@app.post("/api/bundles/{bundle_id}/tweak-stem")
+async def tweak_stem(bundle_id: str, req: StemTweakRequest):
+    bundle_dir = OUTPUT_DIR / bundle_id
+    if not (bundle_dir / "project.json").exists():
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    try:
+        # If a prompt hint was provided, temporarily patch the spec prompt
+        # so the synthesis engine picks up the new style cues
+        manifest_path = bundle_dir / "project.json"
+        manifest = json.loads(manifest_path.read_text())
+        original_prompt = manifest["spec"]["prompt"]
+        
+        if req.prompt_hint:
+            # Merge the hint into the prompt so the renderer sees the new cues
+            manifest["spec"]["prompt"] = f"{original_prompt} {req.prompt_hint}"
+            manifest_path.write_text(json.dumps(manifest, indent=2))
+        
+        try:
+            pack_genre = manifest["spec"].get("genre", "trap")
+            sample_pack_dir = OUTPUT_DIR / f"sample_pack_{pack_genre}"
+            sp = sample_pack_dir if sample_pack_dir.exists() else None
+            
+            result = engine.regenerate_stem(
+                bundle_dir=bundle_dir,
+                stem=req.stem,
+                variation=req.variation,
+                sample_pack_dir=sp,
+            )
+        finally:
+            # Restore original prompt so the project stays clean
+            if req.prompt_hint:
+                manifest["spec"]["prompt"] = original_prompt
+                manifest_path.write_text(json.dumps(manifest, indent=2))
+        
+        return {
+            "status": "success",
+            "stem": req.stem,
+            "message": f"Regenerated {req.stem} with hint: {req.prompt_hint or 'default variation'}",
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/profile")
 async def get_profile():
     return {"summary": engine.taste_profile.summary(), "raw": engine.taste_profile.profile}

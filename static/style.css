@@ -486,3 +486,83 @@ canvas#waveform {
 
 /* Utils */
 .hidden { display: none !important; }
+
+/* Stem Tweak Row */
+.stem-tweak-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md) var(--sp-sm) 44px;
+  background: rgba(0, 240, 255, 0.03);
+  border: 1px solid var(--border-accent);
+  border-top: none;
+  border-radius: 0 0 var(--rad-md) var(--rad-md);
+  margin-top: -2px;
+  margin-bottom: var(--sp-xs);
+  animation: tweakSlideIn 200ms var(--ease-def);
+}
+
+@keyframes tweakSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stem-tweak-input {
+  flex: 1;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: var(--rad-sm);
+  padding: 6px 10px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+
+.stem-tweak-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.stem-tweak-input::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.stem-tweak-var {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--rad-sm);
+  padding: 6px 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.stem-tweak-var:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+}
+
+.stem-tweak-btn {
+  padding: 6px 14px !important;
+  font-size: 11px !important;
+  border-radius: var(--rad-sm) !important;
+  white-space: nowrap;
+}
+
+.tweak-toggle {
+  font-size: 14px !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.tweak-toggle:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.08);
+}

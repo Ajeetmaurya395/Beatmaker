@@ -283,7 +283,17 @@ async function loadBundle(bundleId) {
                 <button class="stem-btn mute-btn" onclick="toggleMute('${stem}')">M</button>
                 <button class="stem-btn solo-btn" onclick="toggleSolo('${stem}')">S</button>
                 <input type="range" class="stem-vol" min="0" max="1" step="0.05" value="1" oninput="setGain('${stem}', this.value)">
+                <button class="stem-btn tweak-toggle" onclick="toggleTweakRow('${stem}')" title="Tweak this stem">✏️</button>
             </div>
+        </div>
+        <div class="stem-tweak-row" id="tweak-row-${stem}" style="display: none;">
+            <input type="text" class="stem-tweak-input" id="tweak-input-${stem}" placeholder="e.g. warmer, more acoustic, less busy...">
+            <select class="stem-tweak-var" id="tweak-var-${stem}">
+                <option value="low">Subtle</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">Wild</option>
+            </select>
+            <button class="btn btn-secondary stem-tweak-btn" onclick="tweakStem('${stem}')">Regenerate</button>
         </div>
     `).join('');
 
@@ -514,6 +524,60 @@ async function submitFeedback(rating) {
         alert('Feedback recorded!');
     } catch (e) {
         alert('Error saving feedback');
+    }
+}
+
+// Stem Tweaking
+function toggleTweakRow(stem) {
+    const row = document.getElementById(`tweak-row-${stem}`);
+    row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+}
+
+async function tweakStem(stem) {
+    if (!currentBundle) return;
+    
+    const input = document.getElementById(`tweak-input-${stem}`);
+    const varSelect = document.getElementById(`tweak-var-${stem}`);
+    const promptHint = input.value.trim();
+    const variation = varSelect.value;
+    
+    // Visual feedback
+    const btn = input.parentElement.querySelector('.stem-tweak-btn');
+    const originalText = btn.innerText;
+    btn.innerText = '⏳ Working...';
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch(`${API_BASE}/bundles/${currentBundle}/tweak-stem`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                stem: stem,
+                prompt_hint: promptHint || null,
+                variation: variation,
+            })
+        });
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.detail || 'Tweak failed');
+        
+        // Reload only the tweaked stem audio
+        const buf = await loadAudioBuffer(currentBundle, stem);
+        stemBuffers[stem] = buf;
+        
+        // Also reload the preview mix
+        const previewBuf = await loadAudioBuffer(currentBundle, 'preview');
+        stemBuffers['preview'] = previewBuf;
+        resizeCanvas();
+        
+        btn.innerText = '✅ Done!';
+        setTimeout(() => { btn.innerText = originalText; }, 2000);
+    } catch (err) {
+        btn.innerText = '❌ Error';
+        setTimeout(() => { btn.innerText = originalText; }, 2000);
+        console.error('Tweak error:', err);
+    } finally {
+        btn.disabled = false;
     }
 }
 
