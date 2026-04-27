@@ -66,6 +66,18 @@ def main() -> None:
         type=str,
         help="Optional comma-separated style tags such as 'aditya_rikhari_like,hindi_indie,moody'",
     )
+    generate_parser.add_argument(
+        "--voice-provider",
+        type=str,
+        default="local",
+        choices=("local", "foundation_remote"),
+        help="Use the built-in renderer or a Foundation-1 compatible remote voice provider for melodic stems",
+    )
+    generate_parser.add_argument(
+        "--foundation-url",
+        type=str,
+        help="Base URL for a Foundation-1 compatible remote generation service",
+    )
     generate_parser.add_argument("--output-dir", type=str, default="outputs", help="Export bundle directory")
     generate_parser.add_argument("--data-dir", type=str, default="data", help="Learning/profile data directory")
 
@@ -136,6 +148,8 @@ def main() -> None:
             taste_strength=args.taste_strength,
             reference_mode=args.reference_mode,
             tags=parse_tags(args.tags),
+            voice_provider=args.voice_provider,
+            foundation_url=args.foundation_url,
         )
 
         print("\n=== Beat Export Complete ===")
@@ -168,10 +182,12 @@ def main() -> None:
         print(f"Ingesting {len(paths)} reference file(s)...")
         for path in paths:
             profile = analyzer.analyze(path)
-            summary = manager.ingest_reference(profile)
+            resolved_tags = tags or pattern_library.auto_tags_for_profile(profile)
+            summary = manager.ingest_reference(profile, tags=resolved_tags)
             drum_pattern = drum_extractor.extract(path, bpm_hint=profile.bpm)
-            pattern_path = pattern_library.add_reference(profile, tags=tags, drum_pattern=drum_pattern)
+            pattern_path = pattern_library.add_reference(profile, tags=resolved_tags, drum_pattern=drum_pattern)
             print(f"  - {summary}")
+            print(f"    tags: {', '.join(resolved_tags) if resolved_tags else 'none'}")
             print(f"    pattern: {pattern_path}")
         print(manager.summary())
         return

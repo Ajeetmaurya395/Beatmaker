@@ -185,12 +185,17 @@ SYNTH_MAP = {
 # Public API
 # ---------------------------------------------------------------------------
 
-def generate_sample_pack(genre: str, output_dir: Path, seed: int = 42) -> Path:
+def generate_sample_pack(
+    genre: str,
+    output_dir: Path,
+    seed: int = 42,
+    trait_tags: list[str] | None = None,
+) -> Path:
     """Generate a genre-appropriate sample pack and write to disk.
 
     Returns the output directory path, ready to be passed to SamplePack().
     """
-    recipe = GENRE_RECIPES.get(genre, GENRE_RECIPES["trap"])
+    recipe = _apply_traits(GENRE_RECIPES.get(genre, GENRE_RECIPES["trap"]), trait_tags or [])
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -236,3 +241,45 @@ def _write_wav(path: Path, audio: array) -> None:
             clipped = max(-1.0, min(1.0, s))
             frames.extend(struct.pack("<h", int(clipped * 32767)))
         wf.writeframes(frames)
+
+
+def _apply_traits(recipe: dict[str, dict], trait_tags: list[str]) -> dict[str, dict]:
+    if not trait_tags:
+        return {stem: dict(params) for stem, params in recipe.items()}
+    adjusted = {stem: dict(params) for stem, params in recipe.items()}
+    tags = {tag.lower() for tag in trait_tags}
+    for stem, params in adjusted.items():
+        if "warm" in tags:
+            if "brightness" in params:
+                params["brightness"] = max(0.35, params["brightness"] * 0.84)
+            if "click" in params:
+                params["click"] = max(0.05, params["click"] * 0.82)
+            if "tone_freq" in params:
+                params["tone_freq"] = max(140, params["tone_freq"] * 0.92)
+        if "soft" in tags:
+            if "dist" in params:
+                params["dist"] = max(0.6, params["dist"] * 0.8)
+            if "noise_mix" in params:
+                params["noise_mix"] = min(0.9, params["noise_mix"] * 0.92)
+            if "dur" in params:
+                params["dur"] = min(0.5, params["dur"] * 1.08)
+        if "airy" in tags:
+            if stem.startswith("hats") and "dur" in params:
+                params["dur"] = min(0.4, params["dur"] * 1.12)
+            if "brightness" in params:
+                params["brightness"] = min(0.95, params["brightness"] * 1.06)
+        if "organic" in tags:
+            if "noise_mix" in params:
+                params["noise_mix"] = min(0.85, params["noise_mix"] * 1.1)
+            if "decay" in params:
+                params["decay"] = max(10, params["decay"] * 0.95)
+        if "punchy" in tags:
+            if "click" in params:
+                params["click"] = min(0.35, params["click"] * 1.15)
+            if "dist" in params:
+                params["dist"] = min(1.9, params["dist"] * 1.12)
+        if "bright" in tags and "brightness" in params:
+            params["brightness"] = min(0.98, params["brightness"] * 1.1)
+        if "laid_back" in tags and "dur" in params:
+            params["dur"] = min(0.55, params["dur"] * 1.06)
+    return adjusted

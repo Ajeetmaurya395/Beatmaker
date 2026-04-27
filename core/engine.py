@@ -3,17 +3,20 @@ from __future__ import annotations
 from pathlib import Path
 import json
 import random
+import hashlib
 
 from core.arrangement import ArrangementBuilder
 from core.beat_spec import BeatSpec
 from core.drum_extractor import DrumPatternExtractor
 from core.dynamic_sample_pack import generate_sample_pack
+from core.foundation_engine import FoundationVoiceEngine
 from core.pattern_library import PatternLibraryManager
 from core.project_exporter import ExportBundle, ProjectExporter
 from core.prompt_engineer import PromptEngineer
 from core.reference_analyzer import ReferenceAnalyzer
 from core.reference_source import ReferenceSourceResolver
 from core.sample_pack import SamplePack
+from core.swarm import AutonomousProducerSwarm
 from core.taste_profile import TasteProfileManager
 
 
@@ -27,6 +30,7 @@ class BeatmakerEngine:
         self.taste_profile = TasteProfileManager(data_root=data_root)
         self.pattern_library = PatternLibraryManager(data_root=data_root)
         self.drum_extractor = DrumPatternExtractor()
+        self.swarm = AutonomousProducerSwarm()
 
     def generate(
         self,
@@ -41,8 +45,21 @@ class BeatmakerEngine:
         taste_strength: float = 0.35,
         reference_mode: str = "inspire",
         tags: list[str] | None = None,
+        voice_provider: str = "local",
+        foundation_url: str | None = None,
     ) -> ExportBundle:
+        prompt_seed = int(hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:8], 16)
+        preference_rng = random.Random(seed if seed is not None else prompt_seed)
+        explicit_style_cue = self._has_explicit_style_cue(prompt)
         normalized_tags = self.pattern_library.normalize_tags(tags or [])
+        if not normalized_tags:
+            normalized_tags = self.pattern_library.extract_tags_from_text(prompt)
+            if not explicit_style_cue:
+                normalized_tags = self.pattern_library.normalize_tags(
+                    [*normalized_tags, *self.taste_profile.preferred_tags(preference_rng, limit=3)]
+                )
+        if not normalized_tags and not explicit_style_cue:
+            normalized_tags = self.pattern_library.normalize_tags(self.taste_profile.preferred_tags(preference_rng, limit=3))
         prompt_for_spec = self._prompt_with_tags(prompt, normalized_tags)
         reference_profile = None
         pattern_hints = None
@@ -65,13 +82,25 @@ class BeatmakerEngine:
                 backbeat_steps=reference_profile.backbeat_steps,
             )
             pattern_hints = self._pattern_hints_from_drum_pattern(drum_pattern) or self._pattern_hints_from_reference(reference_profile)
+        swarm_state = self.swarm.plan(
+            prompt=prompt,
+            taste_profile=self.taste_profile,
+            pattern_library=self.pattern_library,
+            reference_profile=reference_profile,
+            tags=normalized_tags,
+            seed=seed if seed is not None else prompt_seed,
+        )
+        normalized_tags = self.pattern_library.normalize_tags([*normalized_tags, *swarm_state.get("tags", [])])
+        prompt_for_spec = self._prompt_with_tags(prompt, normalized_tags)
         spec = self.prompt_engineer.build_spec(
             prompt=prompt_for_spec,
-            bpm_override=bpm_override,
+            bpm_override=bpm_override or swarm_state.get("bpm"),
             seed=seed,
             deterministic=deterministic,
             total_bars_override=total_bars_override,
-            structure_override=structure_override,
+            structure_override=structure_override or swarm_state.get("structure"),
+            genre_override=swarm_state.get("genre"),
+            key_override=(swarm_state["key_root"], swarm_state["scale"]) if swarm_state.get("key_root") and swarm_state.get("scale") else None,
             reference_profile=reference_profile,
             taste_profile=self.taste_profile,
             taste_strength=taste_strength,
@@ -81,20 +110,49 @@ class BeatmakerEngine:
             prompt_tags = self.pattern_library.extract_tags_from_text(prompt_for_spec)
             combined_tags = self.pattern_library.normalize_tags([*prompt_tags, *normalized_tags])
             pattern_hints = self._pattern_hints_from_library(spec.genre, spec.seed, combined_tags)
+        if pattern_hints is None and swarm_state.get("drum_pattern"):
+            pattern_hints = self._pattern_hints_from_drum_pattern(swarm_state["drum_pattern"])
         events_by_stem, markers = self.arrangement_builder.build(
             spec,
             taste_profile=self.taste_profile,
             pattern_hints=pattern_hints,
+            progression_override=swarm_state.get("chord_progression"),
         )
         if sample_pack_dir is None:
             auto_pack_root = self.exporter.output_root / "_auto_packs"
             auto_pack_root.mkdir(parents=True, exist_ok=True)
-            auto_pack_dir = auto_pack_root / f"{spec.genre}-{spec.seed}"
+            sample_pack_genre = swarm_state.get("sample_pack_genre") or self._choose_sample_pack_genre(spec, normalized_tags, preference_rng)
+            sample_traits = self._merge_unique(
+                swarm_state.get("sample_traits", []),
+                self.taste_profile.preferred_sample_traits(preference_rng, limit=4),
+            )
+            auto_pack_dir = auto_pack_root / f"{sample_pack_genre}-{spec.seed}"
             if not auto_pack_dir.exists():
-                generate_sample_pack(spec.genre if spec.genre != "hindi_indie" else "hindi_indie", auto_pack_dir, spec.seed)
+                generate_sample_pack(sample_pack_genre, auto_pack_dir, spec.seed, trait_tags=sample_traits + normalized_tags)
             sample_pack_dir = auto_pack_dir
         sample_pack = SamplePack(sample_pack_dir, self.exporter.audio_renderer.SAMPLE_RATE) if sample_pack_dir else None
-        return self.exporter.export(spec, events_by_stem, markers, sample_pack=sample_pack)
+        rendered_stem_overrides = None
+        provider_metadata = {"voice_provider": voice_provider}
+        if voice_provider == "foundation_remote":
+            foundation = FoundationVoiceEngine(base_url=foundation_url)
+            foundation_stems, foundation_meta = foundation.generate_stems(
+                spec=spec,
+                swarm_state=swarm_state,
+                tags=normalized_tags,
+            )
+            if foundation_stems:
+                rendered_stem_overrides = foundation_stems
+            provider_metadata["foundation"] = foundation_meta
+
+        return self.exporter.export(
+            spec,
+            events_by_stem,
+            markers,
+            sample_pack=sample_pack,
+            planner_state=swarm_state,
+            rendered_stem_overrides=rendered_stem_overrides,
+            provider_metadata=provider_metadata,
+        )
 
     def regenerate_stem(
         self,
@@ -174,6 +232,13 @@ class BeatmakerEngine:
     def _pattern_hints_from_drum_pattern(self, pattern) -> dict[str, list[int] | list[tuple[int, bool]]] | None:
         if not pattern:
             return None
+        if isinstance(pattern, dict):
+            return {
+                "kick": list(pattern.get("kick", [])),
+                "snare": list(pattern.get("snare", [])),
+                "hats": [tuple(item) for item in pattern.get("hats", [])],
+                "perc": list(pattern.get("perc", [])),
+            }
         return {
             "kick": list(pattern.kick),
             "snare": list(pattern.snare),
@@ -229,3 +294,52 @@ class BeatmakerEngine:
         if not tag_phrases:
             return prompt
         return f"{prompt} [{' '.join(tag_phrases)}]"
+
+    def _choose_sample_pack_genre(
+        self,
+        spec,
+        tags: list[str],
+        rng: random.Random,
+    ) -> str:
+        tag_set = set(tags)
+        if "aditya_rikhari_like" in tag_set or "hindi_indie" in tag_set:
+            return "hindi_indie"
+        if "ritviz_like" in tag_set:
+            return "house"
+        if "bolly_trap" in tag_set or "desi" in tag_set:
+            return "bollywood" if spec.bpm < 120 else "house"
+        preferred_tags = set(self.taste_profile.preferred_tags(rng, limit=3))
+        if "hindi_indie" in preferred_tags and spec.genre in {"lofi", "boom_bap", "hindi_indie"}:
+            return "hindi_indie"
+        return spec.genre
+
+    def _has_explicit_style_cue(self, prompt: str) -> bool:
+        prompt_lower = prompt.lower()
+        cues = (
+            "trap",
+            "drill",
+            "phonk",
+            "house",
+            "club",
+            "dance",
+            "bounce",
+            "bollywood",
+            "hindi indie",
+            "aditya",
+            "rikhari",
+            "ritviz",
+            "boom bap",
+            "lofi",
+            "acoustic",
+            "indie pop",
+            "street",
+        )
+        return any(cue in prompt_lower for cue in cues)
+
+    def _merge_unique(self, *groups: list[str]) -> list[str]:
+        merged: list[str] = []
+        for group in groups:
+            for item in group:
+                if item not in merged:
+                    merged.append(item)
+        return merged

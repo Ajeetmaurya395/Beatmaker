@@ -37,6 +37,9 @@ class ProjectExporter:
         events_by_stem: dict[str, list[NoteEvent]],
         markers: list[SectionMarker],
         sample_pack: SamplePack | None = None,
+        planner_state: dict | None = None,
+        rendered_stem_overrides: dict[str, object] | None = None,
+        provider_metadata: dict | None = None,
     ) -> ExportBundle:
         bundle_dir = self._bundle_dir(spec)
         stems_dir = bundle_dir / "stems"
@@ -48,6 +51,7 @@ class ProjectExporter:
         midi_paths: list[Path] = []
         rendered_stems = {}
         pattern_summary = summarize_patterns(spec, events_by_stem)
+        rendered_stem_overrides = rendered_stem_overrides or {}
 
         for stem in spec.stems:
             events = events_by_stem.get(stem, [])
@@ -55,7 +59,9 @@ class ProjectExporter:
             self.midi_writer.write_stem(midi_path, stem, events, spec.bpm)
             midi_paths.append(midi_path)
 
-            audio = self.audio_renderer.render_stem(stem, events, spec, sample_pack=sample_pack)
+            audio = rendered_stem_overrides.get(stem)
+            if audio is None:
+                audio = self.audio_renderer.render_stem(stem, events, spec, sample_pack=sample_pack)
             rendered_stems[stem] = audio
             wav_path = stems_dir / f"{stem}.wav"
             self.audio_renderer.write_wav(wav_path, audio)
@@ -121,10 +127,12 @@ class ProjectExporter:
                 "sample_pack_path": str(sample_pack.root) if sample_pack else None,
                 "reference_summary": spec.reference_summary,
                 "learned_summary": spec.learned_summary,
+                "provider_metadata": provider_metadata,
             },
             "analysis": {
                 "structure_signature": structure_signature(spec.sections),
                 "pattern_summary": pattern_summary,
+                "swarm": planner_state,
             },
         }
         manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")

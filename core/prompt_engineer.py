@@ -132,6 +132,8 @@ class PromptEngineer:
         deterministic: bool = False,
         total_bars_override: int | None = None,
         structure_override: str | None = None,
+        genre_override: str | None = None,
+        key_override: tuple[str, str] | None = None,
         reference_profile: ReferenceProfile | None = None,
         taste_profile: TasteProfileManager | None = None,
         taste_strength: float = 0.35,
@@ -154,6 +156,7 @@ class PromptEngineer:
             taste_profile,
             rng,
             taste_strength,
+            genre_override=genre_override,
         )
         bpm = (
             bpm_override
@@ -162,14 +165,17 @@ class PromptEngineer:
             or self._taste_bpm(taste_profile, rng, taste_strength, preset.genre)
             or rng.randint(*preset.bpm_range)
         )
-        key_root, scale = self._extract_key(
-            prompt_lower,
-            rng,
-            reference_profile,
-            taste_profile,
-            taste_strength,
-            reference_mode,
-        )
+        if key_override:
+            key_root, scale = key_override
+        else:
+            key_root, scale = self._extract_key(
+                prompt_lower,
+                rng,
+                reference_profile,
+                taste_profile,
+                taste_strength,
+                reference_mode,
+            )
         sections = self._resolve_sections(
             preset=preset,
             total_bars_override=total_bars_override,
@@ -204,7 +210,12 @@ class PromptEngineer:
         taste_profile: TasteProfileManager | None,
         rng: random.Random,
         taste_strength: float,
+        genre_override: str | None = None,
     ) -> GenrePreset:
+        if genre_override:
+            for _keywords, preset in self.GENRE_PRESETS:
+                if preset.genre == genre_override:
+                    return preset
         scored: list[tuple[int, GenrePreset]] = []
         for keywords, preset in self.GENRE_PRESETS:
             score = sum(2 if " " in keyword else 1 for keyword in keywords if keyword in prompt)

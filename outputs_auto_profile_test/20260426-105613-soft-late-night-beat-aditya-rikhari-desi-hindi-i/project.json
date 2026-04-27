@@ -1,0 +1,186 @@
+{
+  "spec": {
+    "prompt": "soft late night beat [aditya rikhari desi hindi indie lofi moody]",
+    "genre": "hindi_indie",
+    "bpm": 82,
+    "key_root": "G",
+    "scale": "minor",
+    "swing": 0.16,
+    "seed": 999129129,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.28
+      },
+      {
+        "name": "verse",
+        "bars": 8,
+        "energy": 0.46
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.62
+      },
+      {
+        "name": "verse",
+        "bars": 8,
+        "energy": 0.5
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.66
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.24
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=hindi_indie, taste_strength=0.35, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.28
+    },
+    {
+      "name": "verse",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.46
+    },
+    {
+      "name": "hook",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.62
+    },
+    {
+      "name": "verse",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.5
+    },
+    {
+      "name": "hook",
+      "start_bar": 28,
+      "bars": 8,
+      "energy": 0.66
+    },
+    {
+      "name": "outro",
+      "start_bar": 36,
+      "bars": 4,
+      "energy": 0.24
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 192,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 40,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 640,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 472,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 106,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 432,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 110,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-26T10:56:56",
+  "render": {
+    "sample_pack": "hindi_indie-999129129 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "hindi_indie-999129129",
+    "sample_pack_path": "outputs_auto_profile_test/_auto_packs/hindi_indie-999129129",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=hindi_indie, taste_strength=0.35, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:4|verse:8|hook:8|verse:8|hook:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "10,14,2,6": 3,
+        "0,10,2,6": 1,
+        "0,10,14,6": 1,
+        "0,10,14,2,6": 32,
+        "0,10,14,2": 2,
+        "0,14,2,6": 1
+      },
+      "snare": {
+        "10": 40
+      },
+      "hats": {
+        "0c,10c,11c,12c,13c,14c,15c,1c,2c,3c,4c,5c,6c,7c,8c,9c": 40
+      },
+      "perc": {
+        "1,10,13,14,15,2,3,5,6,7,9": 1,
+        "1,10,11,14,15,2,3,5,6,7,9": 2,
+        "1,11,13,14,15,2,3,5,6,7,9": 2,
+        "1,10,11,13,14,15,2,3,5,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,6,7,9": 32,
+        "1,10,11,13,14,15,2,5,6,7,9": 2
+      },
+      "bass_808": {
+        "0.00/1.10": 1,
+        "0.00/1.10,1.75/0.60": 7,
+        "0.00/1.10,1.75/0.60,3.00/0.70": 25,
+        "0.00/0.90,1.25/0.50,2.50/1.00": 2,
+        "0.00/1.40,2.00/1.20": 5
+      },
+      "chords": {
+        "0.00/3.80,0.00/3.80,0.00/3.80,2.00/3.80,2.00/3.80,2.00/3.80": 2,
+        "0.50/1.80,0.50/1.80,0.50/1.80,1.00/1.80,1.00/1.80,1.00/1.80,2.50/1.80,2.50/1.80,2.50/1.80,3.00/1.80,3.00/1.80,3.00/1.80": 31,
+        "0.00/1.80,0.00/1.80,0.00/1.80,0.50/1.80,0.50/1.80,0.50/1.80,1.00/1.80,1.00/1.80,1.00/1.80,1.50/1.80,1.50/1.80,1.50/1.80,2.00/1.80,2.00/1.80,2.00/1.80,2.50/1.80,2.50/1.80,2.50/1.80": 1,
+        "0.00/3.80,0.00/3.80,0.00/3.80": 4,
+        "0.00/1.80,0.00/1.80,0.00/1.80,1.50/1.80,1.50/1.80,1.50/1.80,2.50/1.80,2.50/1.80,2.50/1.80": 2
+      },
+      "lead": {
+        "0.50/0.95,2.00/0.95": 2,
+        "0.00/0.95,1.75/0.95,3.25/0.95": 23,
+        "0.00/0.95,1.75/0.95": 7,
+        "0.00/0.95,1.25/0.95": 1,
+        "0.00/0.95,1.25/0.95,2.75/0.95": 3,
+        "0.50/0.95,2.00/0.95,3.00/0.95": 4
+      }
+    }
+  }
+}

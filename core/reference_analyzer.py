@@ -44,7 +44,7 @@ class ReferenceAnalyzer:
         bpm, energy = self._estimate_tempo_and_energy(samples, sample_rate)
         key_root, scale = self._estimate_key(samples, sample_rate)
         brightness = self._estimate_brightness(samples)
-        genre_hint = self._infer_genre(bpm, brightness, energy)
+        genre_hint = self._infer_genre(bpm, brightness, energy, path.stem.lower())
         return ReferenceProfile(
             source_path=path,
             source_kind="file",
@@ -181,7 +181,17 @@ class ReferenceAnalyzer:
             score += magnitude if interval in template else -magnitude * 0.35
         return score
 
-    def _infer_genre(self, bpm: int, brightness: float, energy: float) -> str:
+    def _infer_genre(self, bpm: int, brightness: float, energy: float, label: str = "") -> str:
+        if any(word in label for word in ("aditya", "rikhari", "prateek", "kuhad", "indie", "acoustic", "unplugged")):
+            return "hindi_indie"
+        if any(word in label for word in ("ritviz", "desi house", "dance", "electronic")) and 110 <= bpm <= 132:
+            return "house"
+        if any(word in label for word in ("bollywood", "hindi", "desi", "jhankar")) and 82 <= bpm <= 122:
+            return "bollywood"
+        if 72 <= bpm <= 104 and brightness < 0.24 and 0.18 <= energy <= 0.62:
+            return "hindi_indie"
+        if 86 <= bpm <= 118 and 0.18 <= brightness <= 0.34 and 0.22 <= energy <= 0.72:
+            return "bollywood"
         if 120 <= bpm <= 130 and brightness > 0.22:
             return "house"
         if bpm >= 136 and brightness > 0.26 and energy > 0.45:

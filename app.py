@@ -40,6 +40,8 @@ class GenerateRequest(BaseModel):
     taste_strength: float = 0.15
     deterministic: bool = False
     tags: Optional[Union[List[str], str]] = None
+    voice_provider: str = "local"
+    foundation_url: Optional[str] = None
 
 class RateRequest(BaseModel):
     feedback: str  # 'favorite', 'like', 'skip', 'dislike'
@@ -71,6 +73,8 @@ async def generate_beat(req: GenerateRequest):
             taste_strength=req.taste_strength,
             reference_mode=req.reference_mode,
             tags=tags,
+            voice_provider=req.voice_provider,
+            foundation_url=req.foundation_url,
         )
         
         return {
@@ -258,8 +262,8 @@ async def ingest_reference(file: UploadFile = File(...), tags: Optional[str] = F
         drum_extractor = DrumPatternExtractor()
         pattern_library = PatternLibraryManager(data_root=DATA_DIR)
         profile = analyzer.analyze(temp_path)
-        summary = engine.taste_profile.ingest_reference(profile)
-        normalized_tags = pattern_library.normalize_tags(parse_tags(tags))
+        normalized_tags = pattern_library.normalize_tags(parse_tags(tags)) or pattern_library.auto_tags_for_profile(profile)
+        summary = engine.taste_profile.ingest_reference(profile, tags=normalized_tags)
         pattern_path = pattern_library.add_reference(
             profile,
             tags=normalized_tags,
@@ -268,6 +272,7 @@ async def ingest_reference(file: UploadFile = File(...), tags: Optional[str] = F
         return {
             "status": "success",
             "summary": summary,
+            "tags": normalized_tags,
             "pattern_path": str(pattern_path),
             "profile_summary": engine.taste_profile.summary(),
         }

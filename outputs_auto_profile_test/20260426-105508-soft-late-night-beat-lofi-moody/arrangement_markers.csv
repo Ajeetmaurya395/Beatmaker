@@ -1,0 +1,6 @@
+name,start_bar,bars,energy
+intro,0,4,0.35
+loop,4,8,0.55
+variation,12,8,0.65
+loop,20,8,0.58
+outro,28,4,0.30

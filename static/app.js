@@ -148,6 +148,8 @@ async function handleGenerate(e) {
         bpm: document.getElementById('bpm').value ? parseInt(document.getElementById('bpm').value) : undefined,
         bars: document.getElementById('bars').value ? parseInt(document.getElementById('bars').value) : undefined,
         seed: document.getElementById('seed').value ? parseInt(document.getElementById('seed').value) : undefined,
+        voice_provider: document.getElementById('voice-provider').value || 'local',
+        foundation_url: document.getElementById('foundation-url').value || undefined,
     };
 
     els.btnSubmit.disabled = true;

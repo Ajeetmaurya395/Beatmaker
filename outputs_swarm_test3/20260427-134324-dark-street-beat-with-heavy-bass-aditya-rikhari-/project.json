@@ -1,0 +1,275 @@
+{
+  "spec": {
+    "prompt": "dark street beat with heavy bass [aditya rikhari desi hindi indie moody trap]",
+    "genre": "drill",
+    "bpm": 146,
+    "key_root": "A",
+    "scale": "minor",
+    "swing": 0.11,
+    "seed": 400411747,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.4
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "verse",
+        "bars": 8,
+        "energy": 0.72
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=drill, taste_strength=0.25, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.4
+    },
+    {
+      "name": "hook",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "verse",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.72
+    },
+    {
+      "name": "hook",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 158,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 38,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 512,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 376,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 121,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 147,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 96,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-27T13:43:40",
+  "render": {
+    "sample_pack": "hindi_indie-400411747 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "hindi_indie-400411747",
+    "sample_pack_path": "outputs_swarm_test3/_auto_packs/hindi_indie-400411747",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=drill, taste_strength=0.25, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:4|hook:8|verse:8|hook:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "10,14,2,6": 4,
+        "0,10,2,6": 2,
+        "0,10,14,2": 1,
+        "0,10,14,15,2,6": 3,
+        "0,10,14,2,6": 18,
+        "0,1,10,14,2,6": 1,
+        "0,10,14,2,6,9": 1,
+        "0,10,14,2,3,6": 1,
+        "0,10,14,6": 1
+      },
+      "snare": {
+        "10": 26,
+        "10,15": 3,
+        "1,10": 2,
+        "10,3": 1
+      },
+      "hats": {
+        "0c,10c,11c,12c,13c,14c,15c,1c,2c,3c,4c,5c,6c,7c,8c,9c": 32
+      },
+      "perc": {
+        "1,10,11,14,15,2,3,5,6,7,9": 2,
+        "1,10,11,13,14,15,2,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,7,9": 1,
+        "1,10,11,13,14,15,2,3,6,7,9": 3,
+        "1,10,11,13,14,15,2,3,5,6,7,9": 24,
+        "10,11,13,14,15,2,3,5,6,7,9": 1
+      },
+      "bass_808": {
+        "0.00/1.00,1.00/0.50,2.00/1.00": 2,
+        "0.00/1.00,1.75/0.25,2.00/1.00": 1,
+        "0.00/1.25,1.50/0.50,2.00/0.90": 8,
+        "0.00/0.75,0.75/0.25,2.00/0.90,2.75/0.25,3.50/0.35": 5,
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 14,
+        "0.00/1.25,2.00/0.90,3.25/0.50": 1,
+        "0.00/1.00,1.75/0.25,2.00/1.00,3.00/0.75": 1
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50": 12,
+        "0.00/2.75,0.00/2.75,0.00/2.75,1.50/2.75,1.50/2.75,1.50/2.75,3.00/2.75,3.00/2.75,3.00/2.75": 5,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 9,
+        "0.00/2.75,0.00/2.75,0.00/2.75,2.00/2.75,2.00/2.75,2.00/2.75": 2,
+        "0.00/3.50,0.00/3.50,0.00/3.50,2.00/3.50,2.00/3.50,2.00/3.50": 3,
+        "0.00/3.50,0.00/3.50,0.00/3.50,1.50/3.50,1.50/3.50,1.50/3.50,3.00/3.50,3.00/3.50,3.00/3.50": 1
+      },
+      "lead": {
+        "_": 8,
+        "0.75/0.40,1.50/0.40,2.50/0.40,3.25/0.40": 18,
+        "0.50/0.40,1.25/0.40,2.00/0.40,3.50/0.40": 3,
+        "0.25/0.40,1.75/0.40,2.50/0.40,3.00/0.40": 3
+      }
+    },
+    "swarm": {
+      "prompt": "dark street beat with heavy bass",
+      "tags": [
+        "aditya_rikhari_like",
+        "desi",
+        "hindi_indie",
+        "moody",
+        "trap"
+      ],
+      "retry_count": 0,
+      "approved": true,
+      "sample_paths": {},
+      "mood_analysis": {
+        "valence": 0.33000000000000007,
+        "arousal": 0.77,
+        "genre": "drill"
+      },
+      "genre": "drill",
+      "bpm": 146,
+      "scale": "minor",
+      "key_root": "A",
+      "structure": "intro:4,hook:8,verse:8,hook:8,outro:4",
+      "chord_progression": [
+        0,
+        5,
+        3,
+        4
+      ],
+      "drum_pattern": {
+        "kick": [
+          0,
+          6,
+          9,
+          12
+        ],
+        "snare": [
+          4,
+          12
+        ],
+        "hats": [
+          [
+            0,
+            false
+          ],
+          [
+            2,
+            false
+          ],
+          [
+            4,
+            false
+          ],
+          [
+            6,
+            false
+          ],
+          [
+            8,
+            false
+          ],
+          [
+            10,
+            false
+          ],
+          [
+            12,
+            false
+          ],
+          [
+            14,
+            false
+          ],
+          [
+            15,
+            false
+          ]
+        ],
+        "perc": [
+          2,
+          7,
+          13
+        ]
+      },
+      "sample_pack_genre": "hindi_indie",
+      "sample_traits": [
+        "airy",
+        "bright",
+        "organic",
+        "punchy",
+        "warm"
+      ],
+      "critic_feedback": "Critic approved progression, groove, and palette."
+    }
+  }
+}

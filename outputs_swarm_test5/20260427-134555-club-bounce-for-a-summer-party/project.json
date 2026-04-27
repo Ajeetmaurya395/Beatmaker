@@ -1,0 +1,284 @@
+{
+  "spec": {
+    "prompt": "club bounce for a summer party",
+    "genre": "house",
+    "bpm": 126,
+    "key_root": "B",
+    "scale": "major",
+    "swing": 0.04,
+    "seed": 368632063,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 8,
+        "energy": 0.4
+      },
+      {
+        "name": "groove",
+        "bars": 8,
+        "energy": 0.65
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.97
+      },
+      {
+        "name": "break",
+        "bars": 8,
+        "energy": 0.5
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.97
+      },
+      {
+        "name": "outro",
+        "bars": 8,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=house, taste_strength=0.25, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 8,
+      "energy": 0.4
+    },
+    {
+      "name": "groove",
+      "start_bar": 8,
+      "bars": 8,
+      "energy": 0.65
+    },
+    {
+      "name": "drop",
+      "start_bar": 16,
+      "bars": 8,
+      "energy": 0.97
+    },
+    {
+      "name": "break",
+      "start_bar": 24,
+      "bars": 8,
+      "energy": 0.5
+    },
+    {
+      "name": "drop",
+      "start_bar": 32,
+      "bars": 8,
+      "energy": 0.97
+    },
+    {
+      "name": "outro",
+      "start_bar": 40,
+      "bars": 8,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 181,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 104,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 393,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 136,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 166,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 435,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 122,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-27T13:46:22",
+  "render": {
+    "sample_pack": "house-368632063 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "house-368632063",
+    "sample_pack_path": "outputs_swarm_test5/_auto_packs/house-368632063",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=house, taste_strength=0.25, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:8|groove:8|drop:8|break:8|drop:8|outro:8",
+    "pattern_summary": {
+      "kick": {
+        "0,12,8": 8,
+        "0,12,4": 3,
+        "12,4,8": 5,
+        "0,12,4,8": 27,
+        "0,1,12,4,8": 1,
+        "0,12,15,4,8": 2,
+        "0,12,14,4,8": 1,
+        "0,12,4,6,8": 1
+      },
+      "snare": {
+        "12,4": 40,
+        "12,15,4": 3,
+        "12,14,4": 1,
+        "12,4,9": 1,
+        "12,4,6": 1,
+        "1,12,4": 2
+      },
+      "hats": {
+        "10c,12c,14c,15o,2c,4c,6c,8c": 41,
+        "10c,12c,14c,15o,2c,4c,6c,7c,8c": 3,
+        "10c,12c,14c,15c,15o,2c,4c,6c,8c": 2,
+        "10c,12c,14c,15c,15o,2c,4c,5c,6c,8c": 2
+      },
+      "perc": {
+        "14,6": 8,
+        "10,14": 4,
+        "10,6": 4,
+        "10,14,6": 24,
+        "10,14,15,6": 2,
+        "10,14,6,9": 2,
+        "1,10,14,6": 3,
+        "10,14,3,6": 1
+      },
+      "bass_808": {
+        "0.00/0.50,1.00/0.75,2.00/0.50": 17,
+        "0.00/0.50,1.50/0.50,2.00/0.50": 1,
+        "0.00/0.50,1.00/0.75,2.00/0.50,2.75/0.75": 12,
+        "0.00/0.50,2.00/0.50": 2,
+        "0.00/0.50,1.50/0.50,2.00/0.50,3.50/0.35": 5,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 7,
+        "0.00/0.50,2.00/0.50,2.75/0.75": 2,
+        "0.00/0.50,2.00/0.50,3.50/0.35": 1,
+        "0.00/0.75,1.00/0.75,2.00/0.75": 1
+      },
+      "chords": {
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.50/1.75,1.50/1.75,1.50/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 33,
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.00/1.75,1.00/1.75,1.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 8,
+        "0.00/1.75,0.00/1.75,0.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75": 7
+      },
+      "lead": {
+        "_": 16,
+        "0.50/0.75,1.50/0.75,2.50/0.75,3.50/0.75": 21,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 5,
+        "0.00/0.75,0.75/0.75,1.50/0.75,2.25/0.75,3.00/0.75": 1,
+        "0.50/0.75,1.50/0.75,2.50/0.75": 2,
+        "0.00/0.75,1.00/0.75": 1,
+        "0.50/0.75,1.50/0.75": 1,
+        "0.50/0.75,1.50/0.75,3.50/0.75": 1
+      }
+    },
+    "swarm": {
+      "prompt": "club bounce for a summer party",
+      "tags": [],
+      "retry_count": 0,
+      "approved": true,
+      "sample_paths": {},
+      "mood_analysis": {
+        "valence": 0.7100000000000001,
+        "arousal": 0.77,
+        "genre": "house"
+      },
+      "genre": "house",
+      "bpm": 126,
+      "scale": "major",
+      "key_root": "B",
+      "structure": "intro:8,groove:8,drop:8,break:8,drop:8,outro:8",
+      "chord_progression": [
+        0,
+        4,
+        5,
+        3
+      ],
+      "drum_pattern": {
+        "kick": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "snare": [
+          4,
+          12
+        ],
+        "hats": [
+          [
+            2,
+            false
+          ],
+          [
+            4,
+            false
+          ],
+          [
+            6,
+            false
+          ],
+          [
+            8,
+            false
+          ],
+          [
+            10,
+            false
+          ],
+          [
+            12,
+            false
+          ],
+          [
+            14,
+            false
+          ],
+          [
+            15,
+            true
+          ]
+        ],
+        "perc": [
+          6,
+          10,
+          14
+        ]
+      },
+      "sample_pack_genre": "house",
+      "sample_traits": [
+        "airy",
+        "bright",
+        "organic",
+        "punchy"
+      ],
+      "critic_feedback": "Critic approved progression, groove, and palette."
+    }
+  }
+}

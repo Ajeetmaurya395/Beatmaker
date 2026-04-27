@@ -68,6 +68,7 @@ class ArrangementBuilder:
         stem_seed_overrides: dict[str, int] | None = None,
         humanize_amounts: dict[str, float] | None = None,
         pattern_hints: dict[str, list[int] | list[tuple[int, bool]]] | None = None,
+        progression_override: list[int] | None = None,
     ) -> tuple[dict[str, list[NoteEvent]], list[SectionMarker]]:
         markers: list[SectionMarker] = []
         events: dict[str, list[NoteEvent]] = {stem: [] for stem in spec.stems}
@@ -95,7 +96,7 @@ class ArrangementBuilder:
                 bass_rng = self._stem_rng(section_seed, "bass_808", stem_seed_overrides)
                 chord_rng = self._stem_rng(section_seed, "chords", stem_seed_overrides)
                 lead_rng = self._stem_rng(section_seed, "lead", stem_seed_overrides)
-                chord_degree = self._progression_degree(spec, section_index, bar_offset)
+                chord_degree = self._progression_degree(spec, section_index, bar_offset, progression_override)
                 self._add_drum_bar(
                     events,
                     spec,
@@ -509,9 +510,18 @@ class ArrangementBuilder:
             steps.append(rng.choice([1, 5, 9, 13]))
         return sorted(set(steps))
 
-    def _progression_degree(self, spec: BeatSpec, section_index: int, bar_offset: int) -> int:
-        progressions = self.PROGRESSIONS[spec.scale]
-        progression = progressions[self._prompt_index(spec, "progression", len(progressions), section_index) % len(progressions)]
+    def _progression_degree(
+        self,
+        spec: BeatSpec,
+        section_index: int,
+        bar_offset: int,
+        progression_override: list[int] | None = None,
+    ) -> int:
+        if progression_override:
+            progression = progression_override
+        else:
+            progressions = self.PROGRESSIONS[spec.scale]
+            progression = progressions[self._prompt_index(spec, "progression", len(progressions), section_index) % len(progressions)]
         return progression[bar_offset % len(progression)]
 
     def _triad(self, spec: BeatSpec, degree: int, octave: int) -> tuple[int, int, int]:

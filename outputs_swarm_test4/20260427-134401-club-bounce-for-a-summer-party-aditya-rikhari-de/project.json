@@ -1,0 +1,288 @@
+{
+  "spec": {
+    "prompt": "club bounce for a summer party [aditya rikhari desi hindi indie]",
+    "genre": "house",
+    "bpm": 126,
+    "key_root": "B",
+    "scale": "major",
+    "swing": 0.04,
+    "seed": 314804609,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 8,
+        "energy": 0.4
+      },
+      {
+        "name": "groove",
+        "bars": 8,
+        "energy": 0.65
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.97
+      },
+      {
+        "name": "break",
+        "bars": 8,
+        "energy": 0.5
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.97
+      },
+      {
+        "name": "outro",
+        "bars": 8,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=house, taste_strength=0.25, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 8,
+      "energy": 0.4
+    },
+    {
+      "name": "groove",
+      "start_bar": 8,
+      "bars": 8,
+      "energy": 0.65
+    },
+    {
+      "name": "drop",
+      "start_bar": 16,
+      "bars": 8,
+      "energy": 0.97
+    },
+    {
+      "name": "break",
+      "start_bar": 24,
+      "bars": 8,
+      "energy": 0.5
+    },
+    {
+      "name": "drop",
+      "start_bar": 32,
+      "bars": 8,
+      "energy": 0.97
+    },
+    {
+      "name": "outro",
+      "start_bar": 40,
+      "bars": 8,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 230,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 57,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 768,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 560,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 174,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 537,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 146,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-04-27T13:44:35",
+  "render": {
+    "sample_pack": "hindi_indie-314804609 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "hindi_indie-314804609",
+    "sample_pack_path": "outputs_swarm_test4/_auto_packs/hindi_indie-314804609",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=house, taste_strength=0.25, reference_mode=inspire"
+  },
+  "analysis": {
+    "structure_signature": "intro:8|groove:8|drop:8|break:8|drop:8|outro:8",
+    "pattern_summary": {
+      "kick": {
+        "0,14,2,6": 5,
+        "0,10,14,2": 2,
+        "0,10,14,6": 2,
+        "0,10,2,6": 4,
+        "10,14,2,6": 3,
+        "0,10,14,2,6": 26,
+        "0,10,14,2,6,9": 1,
+        "0,10,14,2,3,6": 3,
+        "0,10,14,15,2,6": 2
+      },
+      "snare": {
+        "10": 39,
+        "10,9": 2,
+        "1,10": 3,
+        "10,6": 2,
+        "10,15": 1,
+        "10,3": 1
+      },
+      "hats": {
+        "0c,10c,11c,12c,13c,14c,15c,1c,2c,3c,4c,5c,6c,7c,8c,9c": 48
+      },
+      "perc": {
+        "1,10,11,13,14,2,3,5,6,7,9": 3,
+        "1,10,11,13,14,15,3,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,7,9": 3,
+        "1,10,13,14,15,2,3,5,6,7,9": 2,
+        "1,11,13,14,15,2,3,5,6,7,9": 3,
+        "1,10,11,13,14,15,2,3,5,6,7,9": 32,
+        "1,10,11,13,14,15,2,5,6,7,9": 2,
+        "1,10,11,13,14,15,2,3,5,6,9": 1,
+        "10,11,13,14,15,2,3,5,6,7,9": 1
+      },
+      "bass_808": {
+        "0.00/0.50,1.50/0.50,2.00/0.50": 12,
+        "0.00/0.50,1.00/0.75,2.00/0.50": 2,
+        "0.00/0.50,2.00/0.50": 1,
+        "0.00/0.50,1.50/0.50,2.00/0.50,3.50/0.35": 26,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 2,
+        "0.00/0.50,2.00/0.50,3.50/0.35": 1,
+        "0.00/0.50,1.00/0.75,2.00/0.50,2.75/0.75": 3,
+        "0.00/0.75,1.00/0.75,2.00/0.75": 1
+      },
+      "chords": {
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.00/1.75,1.00/1.75,1.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 40,
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.50/1.75,1.50/1.75,1.50/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 3,
+        "0.00/1.75,0.00/1.75,0.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75": 5
+      },
+      "lead": {
+        "_": 16,
+        "0.00/0.75,0.75/0.75,1.50/0.75,2.25/0.75,3.00/0.75": 22,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 2,
+        "0.50/0.75,1.50/0.75": 1,
+        "0.00/0.75,0.75/0.75,1.50/0.75": 1,
+        "0.00/0.75,0.75/0.75,1.50/0.75,3.00/0.75": 1,
+        "0.00/0.75,0.75/0.75,1.50/0.75,2.25/0.75": 2,
+        "0.00/0.75,0.75/0.75,2.25/0.75": 1,
+        "0.00/0.75,0.75/0.75,2.25/0.75,3.00/0.75": 1,
+        "0.50/0.75,1.50/0.75,2.50/0.75,3.50/0.75": 1
+      }
+    },
+    "swarm": {
+      "prompt": "club bounce for a summer party",
+      "tags": [
+        "aditya_rikhari_like",
+        "desi",
+        "hindi_indie"
+      ],
+      "retry_count": 0,
+      "approved": true,
+      "sample_paths": {},
+      "mood_analysis": {
+        "valence": 0.7100000000000001,
+        "arousal": 0.77,
+        "genre": "house"
+      },
+      "genre": "house",
+      "bpm": 126,
+      "scale": "major",
+      "key_root": "B",
+      "structure": "intro:8,groove:8,drop:8,break:8,drop:8,outro:8",
+      "chord_progression": [
+        0,
+        4,
+        5,
+        3
+      ],
+      "drum_pattern": {
+        "kick": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "snare": [
+          4,
+          12
+        ],
+        "hats": [
+          [
+            2,
+            false
+          ],
+          [
+            4,
+            false
+          ],
+          [
+            6,
+            false
+          ],
+          [
+            8,
+            false
+          ],
+          [
+            10,
+            false
+          ],
+          [
+            12,
+            false
+          ],
+          [
+            14,
+            false
+          ],
+          [
+            15,
+            true
+          ]
+        ],
+        "perc": [
+          6,
+          10,
+          14
+        ]
+      },
+      "sample_pack_genre": "hindi_indie",
+      "sample_traits": [
+        "airy",
+        "bright",
+        "organic",
+        "punchy"
+      ],
+      "critic_feedback": "Critic approved progression, groove, and palette."
+    }
+  }
+}

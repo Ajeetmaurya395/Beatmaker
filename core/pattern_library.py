@@ -54,6 +54,27 @@ class PatternLibraryManager:
         out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         return out_path
 
+    def auto_tags_for_profile(self, profile: ReferenceProfile) -> list[str]:
+        label = profile.source_path.stem.lower()
+        tags: list[str] = [profile.genre_hint]
+        if profile.genre_hint in {"hindi_indie", "bollywood"}:
+            tags.append("desi")
+        if profile.scale == "minor" or profile.energy < 0.5:
+            tags.append("moody")
+        if profile.genre_hint == "lofi":
+            tags.append("lofi")
+        if profile.genre_hint == "house":
+            tags.append("ritviz_like")
+        if any(word in label for word in ("aditya", "rikhari")):
+            tags.extend(["hindi_indie", "aditya_rikhari_like"])
+        if any(word in label for word in ("prateek", "kuhad", "indie", "acoustic", "unplugged")):
+            tags.extend(["hindi_indie", "acoustic"])
+        if any(word in label for word in ("ritviz", "dance")):
+            tags.extend(["ritviz_like", "desi"])
+        if any(word in label for word in ("bollywood", "hindi", "desi", "jhankar")):
+            tags.extend(["desi"])
+        return self.normalize_tags(tags)
+
     def retrieve(self, genre: str, rng: random.Random, tags: list[str] | None = None) -> dict | None:
         genre_dir = self.root / genre
         if not genre_dir.exists():

@@ -24,12 +24,21 @@ class TasteProfileManager:
         self.profile_path = self.data_root / "taste_profile.json"
         self.profile = self._load_or_create()
 
-    def ingest_reference(self, profile: ReferenceProfile, source_type: str = "reference") -> str:
+    def ingest_reference(
+        self,
+        profile: ReferenceProfile,
+        source_type: str = "reference",
+        tags: list[str] | None = None,
+    ) -> str:
         stats = self.profile["stats"]
         self._bump(stats["genre_scores"], profile.genre_hint, 1.0)
         self._bump(stats["bpm_scores"], str(profile.bpm), 1.0)
         self._bump(stats["key_scores"], f"{profile.key_root} {profile.scale}", 1.0)
         self._bump(stats["energy_scores"], self._bucket(profile.energy), 1.0)
+        for tag in tags or []:
+            self._bump(stats["tag_scores"], tag, 1.0)
+        for trait in self._sample_traits_for_reference(profile):
+            self._bump(stats["sample_trait_scores"], trait, 1.0)
 
         self.profile["history"].append(
             {
@@ -37,6 +46,7 @@ class TasteProfileManager:
                 "source": str(profile.source_path),
                 "summary": profile.summary,
                 "source_kind": getattr(profile, "source_kind", "file"),
+                "tags": list(tags or []),
             }
         )
         self._save()
@@ -162,17 +172,36 @@ class TasteProfileManager:
             rng,
         )
 
+    def preferred_tags(self, rng: random.Random, limit: int = 3) -> list[str]:
+        return self._top_choices(
+            self.profile["stats"]["tag_scores"],
+            self.profile["avoids"]["tag_scores"],
+            rng,
+            limit=limit,
+        )
+
+    def preferred_sample_traits(self, rng: random.Random, limit: int = 3) -> list[str]:
+        return self._top_choices(
+            self.profile["stats"]["sample_trait_scores"],
+            self.profile["avoids"]["sample_trait_scores"],
+            rng,
+            limit=limit,
+        )
+
     def summary(self) -> str:
         rng = random.Random(7)
         genre = self.preferred_genre(rng) or "none"
         bpm = self.preferred_bpm(rng)
         key = self.preferred_key(rng)
+        tags = ",".join(self.preferred_tags(rng, limit=2)) or "none"
+        traits = ",".join(self.preferred_sample_traits(rng, limit=2)) or "none"
         structures = len(self.profile["stats"]["structure_scores"])
         history = len(self.profile["history"])
         return (
             f"profile={self.profile_path.name}, genre={genre}, "
             f"bpm={bpm if bpm is not None else 'none'}, "
             f"key={' '.join(key) if key else 'none'}, "
+            f"tags={tags}, traits={traits}, "
             f"structures={structures}, entries={history}"
         )
 
@@ -209,6 +238,8 @@ class TasteProfileManager:
             "bpm_scores": {},
             "key_scores": {},
             "energy_scores": {},
+            "tag_scores": {},
+            "sample_trait_scores": {},
             "structure_scores": {},
             "genre_structure_scores": {},
             "sample_pack_scores": {},
@@ -246,6 +277,41 @@ class TasteProfileManager:
             if running >= threshold:
                 return key
         return next(iter(candidates))
+
+    def _top_choices(
+        self,
+        positives: dict[str, float],
+        negatives: dict[str, float],
+        rng: random.Random,
+        limit: int,
+    ) -> list[str]:
+        candidates: list[tuple[float, str]] = []
+        for key in set(positives) | set(negatives):
+            positive_score = math.log1p(max(0.0, positives.get(key, 0.0)))
+            negative_score = math.log1p(max(0.0, negatives.get(key, 0.0))) * 0.9
+            score = positive_score - negative_score
+            if score > 0.0:
+                candidates.append((score, key))
+        candidates.sort(key=lambda item: (-item[0], item[1]))
+        return [key for _score, key in candidates[:limit]]
+
+    def _sample_traits_for_reference(self, profile: ReferenceProfile) -> list[str]:
+        traits: list[str] = []
+        if profile.brightness < 0.2:
+            traits.append("warm")
+        if profile.brightness > 0.28:
+            traits.append("bright")
+        if profile.energy < 0.4:
+            traits.append("soft")
+        if profile.energy > 0.65:
+            traits.append("punchy")
+        if profile.bpm <= 100:
+            traits.append("laid_back")
+        if profile.genre_hint == "hindi_indie":
+            traits.extend(["airy", "organic"])
+        if profile.genre_hint == "bollywood":
+            traits.extend(["bright", "wide"])
+        return sorted(set(traits))
 
     def _bucket(self, value: float, step: float = 0.05) -> str:
         snapped = round(round(value / step) * step, 2)

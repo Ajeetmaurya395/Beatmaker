@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "stats": {
+    "genre_scores": {
+      "hindi_indie": 1.0
+    },
+    "bpm_scores": {
+      "138": 1.0
+    },
+    "key_scores": {
+      "C# minor": 1.0
+    },
+    "energy_scores": {
+      "1.00": 1.0
+    },
+    "tag_scores": {
+      "aditya_rikhari_like": 1.0,
+      "desi": 1.0,
+      "hindi_indie": 1.0,
+      "moody": 1.0
+    },
+    "sample_trait_scores": {
+      "airy": 1.0,
+      "bright": 1.0,
+      "organic": 1.0,
+      "punchy": 1.0
+    },
+    "structure_scores": {},
+    "genre_structure_scores": {},
+    "sample_pack_scores": {},
+    "pattern_scores": {
+      "kick": {},
+      "snare": {},
+      "hats": {},
+      "perc": {},
+      "bass_808": {},
+      "chords": {},
+      "lead": {}
+    }
+  },
+  "avoids": {
+    "genre_scores": {},
+    "bpm_scores": {},
+    "key_scores": {},
+    "energy_scores": {},
+    "tag_scores": {},
+    "sample_trait_scores": {},
+    "structure_scores": {},
+    "genre_structure_scores": {},
+    "sample_pack_scores": {},
+    "pattern_scores": {
+      "kick": {},
+      "snare": {},
+      "hats": {},
+      "perc": {},
+      "bass_808": {},
+      "chords": {},
+      "lead": {}
+    }
+  },
+  "history": [
+    {
+      "type": "reference",
+      "source": "/tmp/aditya_rikhari_demo.wav",
+      "summary": "aditya_rikhari_demo.wav -> hindi_indie, 138 BPM, C# minor, energy 1.00, 8.0s",
+      "source_kind": "file",
+      "tags": [
+        "aditya_rikhari_like",
+        "desi",
+        "hindi_indie",
+        "moody"
+      ]
+    }
+  ]
+}
