@@ -11,6 +11,7 @@ except ImportError:
 # A mock database of detailed synth parameters.
 # In a real app, this would be loaded from a JSON/Vector DB.
 PRESET_DB = [
+    # ---- Piano & Keys ----
     {
         "id": "warm_lofi_rhodes",
         "description": "Warm lofi rhodes electric piano with soft attack and tremolo. Perfect for jazz, chillhop, and late night study beats.",
@@ -21,16 +22,44 @@ PRESET_DB = [
         "description": "A dark, moody acoustic grand piano with strong fundamentals and soft highs. Great for emotional or sad beats.",
         "params": {"wave": "sine", "attack": 0.02, "decay": 0.45, "sustain": 0.25, "release": 0.5, "tremolo": 0.0, "harmonics": 3, "detune": 0.001, "brightness": 0.5}
     },
+    # ---- Guitar (Acoustic) ----
+    {
+        "id": "steel_string_strum",
+        "description": "Bright steel string acoustic guitar strum. Warm body resonance with crisp high-end shimmer. Perfect for singer-songwriter indie pop, folk, and upbeat acoustic beats.",
+        "params": {"wave": "triangle", "attack": 0.008, "decay": 0.4, "sustain": 0.08, "release": 0.35, "tremolo": 0.0, "harmonics": 6, "detune": 0.004, "brightness": 0.72}
+    },
+    {
+        "id": "nylon_fingerpick",
+        "description": "Soft nylon string classical guitar fingerpicking. Very intimate, warm, and organic. Ideal for romantic acoustic indie, unplugged sessions, and aditya rikhari style hindi indie.",
+        "params": {"wave": "triangle", "attack": 0.015, "decay": 0.5, "sustain": 0.05, "release": 0.45, "tremolo": 0.0, "harmonics": 3, "detune": 0.002, "brightness": 0.45}
+    },
+    {
+        "id": "indie_jangle_guitar",
+        "description": "Jangly clean electric guitar with chorus and shimmer. Bright, ringing, and airy. Great for dream pop, indie rock, and upbeat guitar-driven beats.",
+        "params": {"wave": "triangle", "attack": 0.005, "decay": 0.25, "sustain": 0.4, "release": 0.5, "tremolo": 0.08, "harmonics": 5, "detune": 0.006, "brightness": 0.8}
+    },
+    {
+        "id": "clean_arpeggio_guitar",
+        "description": "Clean electric guitar arpeggio with warm mids and gentle attack. Ideal for moody indie, ambient guitar loops, and late night introspective beats.",
+        "params": {"wave": "sine", "attack": 0.02, "decay": 0.35, "sustain": 0.3, "release": 0.6, "tremolo": 0.04, "harmonics": 4, "detune": 0.003, "brightness": 0.55}
+    },
+    {
+        "id": "dark_acoustic_guitar",
+        "description": "Dark muted acoustic guitar with heavy body and low brightness. Suited for sad, moody, dark indie folk and melancholic acoustic beats.",
+        "params": {"wave": "triangle", "attack": 0.025, "decay": 0.55, "sustain": 0.06, "release": 0.4, "tremolo": 0.0, "harmonics": 2, "detune": 0.002, "brightness": 0.3}
+    },
+    # ---- Synth Leads ----
     {
         "id": "aggressive_supersaw",
         "description": "Aggressive, wide, and bright supersaw lead. Ideal for hard trap, drill, phonk, or high-energy club bounce.",
         "params": {"wave": "saw", "attack": 0.01, "decay": 0.2, "sustain": 0.6, "release": 0.3, "tremolo": 0.0, "harmonics": 6, "detune": 0.012, "brightness": 0.9}
     },
     {
-        "id": "hindi_indie_acoustic",
-        "description": "Soft nylon string acoustic guitar pluck. Very intimate and organic. Ideal for romantic aditya rikhari style hindi indie.",
-        "params": {"wave": "triangle", "attack": 0.04, "decay": 0.35, "sustain": 0.1, "release": 0.4, "tremolo": 0.0, "harmonics": 4, "detune": 0.003, "brightness": 0.6}
+        "id": "indie_guitar_lead",
+        "description": "Delicate single-note guitar melody lead. Clean tone with subtle vibrato. Perfect as a lead melody line over acoustic guitar chords in indie and folk beats.",
+        "params": {"wave": "triangle", "attack": 0.01, "decay": 0.3, "sustain": 0.15, "release": 0.35, "tremolo": 0.06, "harmonics": 3, "detune": 0.002, "brightness": 0.5}
     },
+    # ---- Pads & Strings ----
     {
         "id": "bollywood_string_ensemble",
         "description": "Rich sweeping Bollywood string ensemble pad. Wide, dramatic, and emotional.",

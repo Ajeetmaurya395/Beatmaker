@@ -45,12 +45,41 @@ class AudioRenderer:
         "moody acoustic",
     )
 
+    GUITAR_FORWARD_CUES = (
+        "guitar",
+        "acoustic guitar",
+        "fingerpick",
+        "strum",
+        "folk",
+        "unplugged",
+        "campfire",
+        "singer-songwriter",
+        "guitar beat",
+        "guitar based",
+        "jangle",
+    )
+
+    # Guitar-Forward Indie: guitar is king, drums are barely present, bass is deep and subtle
+    STEM_GAIN_GUITAR_FORWARD = {
+        "kick": 0.38,
+        "snare": 0.28,
+        "hats": 0.12,
+        "perc": 0.08,
+        "bass_808": 0.45,
+        "chords": 0.88,
+        "lead": 0.35,
+    }
+
     def render_stem(self, stem: str, events: list[NoteEvent], spec: BeatSpec, sample_pack: SamplePack | None = None) -> array:
         total_seconds = (spec.total_beats / spec.bpm) * 60 + 1.5
         total_samples = int(total_seconds * self.SAMPLE_RATE)
         buffer = array("f", [0.0]) * total_samples
 
-        gain_table = self.STEM_GAIN_HINDI_INDIE if self._is_hindi_indie(spec) else self.STEM_GAIN
+        gain_table = self.STEM_GAIN
+        if self._is_guitar_forward(spec):
+            gain_table = self.STEM_GAIN_GUITAR_FORWARD
+        elif self._is_hindi_indie(spec):
+            gain_table = self.STEM_GAIN_HINDI_INDIE
         stem_gain = gain_table.get(stem, 0.35)
 
         for index, event in enumerate(events):
@@ -396,3 +425,7 @@ class AudioRenderer:
     def _is_hindi_indie(self, spec: BeatSpec) -> bool:
         prompt = spec.prompt.lower()
         return spec.genre == "hindi_indie" or any(cue in prompt for cue in self.HINDI_INDIE_CUES)
+
+    def _is_guitar_forward(self, spec: BeatSpec) -> bool:
+        prompt = spec.prompt.lower()
+        return any(cue in prompt for cue in self.GUITAR_FORWARD_CUES)

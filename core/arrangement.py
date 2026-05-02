@@ -8,6 +8,12 @@ from core.beat_spec import BeatSpec, NoteEvent
 from core.pattern_utils import drum_steps_from_pattern
 from core.taste_profile import TasteProfileManager
 
+GUITAR_FORWARD_CUES = (
+    "guitar", "acoustic guitar", "fingerpick", "strum", "folk",
+    "unplugged", "campfire", "singer-songwriter", "guitar beat",
+    "guitar based", "jangle",
+)
+
 
 @dataclass(frozen=True)
 class SectionMarker:
@@ -323,6 +329,17 @@ class ArrangementBuilder:
             ]
             starts = self._prompt_pick(spec, "chords", patterns, rng)
             duration = 1.8 if len(starts) > 2 else 3.8 if energy < 0.6 else 3.2
+        elif self._is_guitar_forward(spec):
+            # Guitar-forward strum/arpeggio patterns
+            patterns = [
+                (0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5),  # Full 8th-note strum
+                (0.0, 0.75, 1.5, 2.0, 2.75, 3.5),           # Syncopated folk strum
+                (0.0, 1.0, 2.0, 3.0),                       # Quarter-note strum
+                (0.0, 0.5, 1.5, 2.0, 3.0, 3.5),             # Push-pull strum
+                (0.25, 1.0, 1.75, 2.5, 3.25),               # Off-beat fingerpick
+            ]
+            starts = self._prompt_pick(spec, "chords", patterns, rng)
+            duration = 0.4 if len(starts) > 5 else 0.8 if len(starts) > 3 else 1.8
         elif spec.genre == "lofi":
             starts = self._prompt_pick(spec, "chords", [(0.0,), (0.0, 2.0), (0.0, 1.5, 3.0)], rng)
             duration = 3.8
@@ -335,6 +352,8 @@ class ArrangementBuilder:
                 velocity = 54 + int(energy * 20)
                 if spec.genre == "hindi_indie":
                     velocity = min(90, 42 + int(energy * 18))
+                elif self._is_guitar_forward(spec):
+                    velocity = min(95, 55 + int(energy * 22))
                 events["chords"].append(
                     NoteEvent(
                         pitch=pitch,
@@ -353,7 +372,7 @@ class ArrangementBuilder:
         bar_number: int,
         rng: random.Random,
     ) -> None:
-        if energy < 0.45 and spec.genre not in {"lofi", "hindi_indie"}:
+        if energy < 0.45 and spec.genre not in {"lofi", "hindi_indie"} and not self._is_guitar_forward(spec):
             return
 
         base = bar_number * 4
@@ -367,7 +386,18 @@ class ArrangementBuilder:
             "phonk": ([0.25, 1.0, 2.0, 2.75, 3.5], [0.5, 1.5, 2.25, 3.0], [0.0, 0.75, 2.0, 3.25]),
             "house": ([0.0, 0.75, 1.5, 2.25, 3.0], [0.0, 1.0, 2.0, 3.0], [0.5, 1.5, 2.5, 3.5]),
         }
-        rhythm = list(self._prompt_pick(spec, "lead", rhythm_map.get(spec.genre, ([0.5, 1.5, 2.5, 3.0],)), rng))
+
+        if self._is_guitar_forward(spec):
+            # Guitar melodic lead: fewer notes, longer sustain, organic phrasing
+            guitar_lead_rhythms = (
+                [0.0, 2.0, 3.0],              # Simple and spacious
+                [0.0, 1.5, 3.0],              # Slightly syncopated
+                [0.5, 1.5, 2.5, 3.5],         # Off-beat melody
+                [0.0, 1.0, 2.5],              # Sparse and moody
+            )
+            rhythm = list(self._prompt_pick(spec, "lead", guitar_lead_rhythms, rng))
+        else:
+            rhythm = list(self._prompt_pick(spec, "lead", rhythm_map.get(spec.genre, ([0.5, 1.5, 2.5, 3.0],)), rng))
 
         for idx, start in enumerate(rhythm):
             if idx > 1 and energy < 0.6 and rng.random() < 0.4:
@@ -380,6 +410,9 @@ class ArrangementBuilder:
             if spec.genre == "hindi_indie":
                 duration = 0.95
                 velocity = min(90, 44 + int(energy * 16))
+            elif self._is_guitar_forward(spec):
+                duration = 1.1
+                velocity = min(85, 48 + int(energy * 18))
             events["lead"].append(
                 NoteEvent(
                     pitch=pitch,
@@ -660,3 +693,8 @@ class ArrangementBuilder:
         if rng.random() < 0.22:
             index = (index + rng.randint(1, len(sequence) - 1)) % len(sequence)
         return sequence[index]
+
+    def _is_guitar_forward(self, spec: BeatSpec) -> bool:
+        prompt = spec.prompt.lower()
+        return any(cue in prompt for cue in GUITAR_FORWARD_CUES)
+
