@@ -1,0 +1,7 @@
+name,start_bar,bars,energy
+intro,0,8,0.40
+groove,8,8,0.65
+drop,16,8,0.97
+break,24,8,0.50
+drop,32,8,0.97
+outro,40,8,0.34

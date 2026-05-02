@@ -1,0 +1,271 @@
+{
+  "spec": {
+    "prompt": "club bounce house beat for a summer party",
+    "genre": "house",
+    "bpm": 125,
+    "key_root": "D#",
+    "scale": "major",
+    "swing": 0.04,
+    "seed": 838512146,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 8,
+        "energy": 0.4
+      },
+      {
+        "name": "groove",
+        "bars": 8,
+        "energy": 0.65
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.97
+      },
+      {
+        "name": "break",
+        "bars": 8,
+        "energy": 0.5
+      },
+      {
+        "name": "drop",
+        "bars": 8,
+        "energy": 0.97
+      },
+      {
+        "name": "outro",
+        "bars": 8,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, tags=none, traits=none, structures=1, entries=9, active_genre=house, taste_strength=0.15, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 8,
+      "energy": 0.4
+    },
+    {
+      "name": "groove",
+      "start_bar": 8,
+      "bars": 8,
+      "energy": 0.65
+    },
+    {
+      "name": "drop",
+      "start_bar": 16,
+      "bars": 8,
+      "energy": 0.97
+    },
+    {
+      "name": "break",
+      "start_bar": 24,
+      "bars": 8,
+      "energy": 0.5
+    },
+    {
+      "name": "drop",
+      "start_bar": 32,
+      "bars": 8,
+      "energy": 0.97
+    },
+    {
+      "name": "outro",
+      "start_bar": 40,
+      "bars": 8,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 187,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 103,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 203,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 135,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 169,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 432,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 125,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-05-02T16:08:24",
+  "render": {
+    "sample_pack": "house-838512146 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "house-838512146",
+    "sample_pack_path": "tmp_eval_outputs2/_auto_packs/house-838512146",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, tags=none, traits=none, structures=1, entries=9, active_genre=house, taste_strength=0.15, reference_mode=inspire",
+    "provider_metadata": {
+      "voice_provider": "local"
+    }
+  },
+  "analysis": {
+    "structure_signature": "intro:8|groove:8|drop:8|break:8|drop:8|outro:8",
+    "pattern_summary": {
+      "kick": {
+        "0,4,8": 2,
+        "0,12,4": 4,
+        "12,4,8": 3,
+        "0,12,8": 7,
+        "0,12,4,8": 21,
+        "0,1,12,4,8": 2,
+        "0,12,14,4,8": 2,
+        "0,12,4,6,8": 1,
+        "0,12,3,4,8": 4,
+        "0,12,4,8,9": 1,
+        "0,12,15,4,8": 1
+      },
+      "snare": {
+        "12,4": 41,
+        "12,4,9": 4,
+        "12,14,4": 1,
+        "12,4,6": 1,
+        "12,3,4": 1
+      },
+      "hats": {
+        "10c,14c,2c,6c": 41,
+        "10c,14c,15c,2c,6c": 1,
+        "10c,14c,2c,6c,7c": 2,
+        "10c,13c,14c,2c,6c,7c": 2,
+        "10c,14c,15c,2c,5c,6c": 1,
+        "10c,13c,14c,15c,2c,6c": 1
+      },
+      "perc": {
+        "3,7": 6,
+        "11,3": 8,
+        "11,7": 2,
+        "11,3,7": 25,
+        "11,3,7,9": 3,
+        "11,14,3,7": 2,
+        "1,11,3,7": 2
+      },
+      "bass_808": {
+        "0.00/0.50,1.00/0.75,2.00/0.50": 1,
+        "0.00/0.50,2.00/0.50": 2,
+        "0.00/0.50,1.50/0.50,2.00/0.50": 11,
+        "0.00/0.75,1.00/0.75,2.00/0.75": 3,
+        "0.00/0.50,1.00/0.75,2.00/0.50,2.75/0.75": 3,
+        "0.00/0.50,1.50/0.50,2.00/0.50,3.50/0.35": 22,
+        "0.00/0.50,2.00/0.50,3.50/0.35": 3,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 2,
+        "0.00/0.75,2.00/0.75,3.00/0.75": 1
+      },
+      "chords": {
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.50/1.75,1.50/1.75,1.50/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 38,
+        "0.00/1.75,0.00/1.75,0.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75": 5,
+        "0.00/1.75,0.00/1.75,0.00/1.75,1.00/1.75,1.00/1.75,1.00/1.75,2.00/1.75,2.00/1.75,2.00/1.75,3.00/1.75,3.00/1.75,3.00/1.75": 5
+      },
+      "lead": {
+        "_": 16,
+        "0.00/0.75,1.00/0.75,2.00/0.75,3.00/0.75": 22,
+        "0.50/0.75,1.50/0.75,2.50/0.75,3.50/0.75": 5,
+        "0.00/0.75,1.00/0.75,3.00/0.75": 2,
+        "0.00/0.75,1.00/0.75,2.00/0.75": 2,
+        "0.00/0.75,0.75/0.75,1.50/0.75,2.25/0.75,3.00/0.75": 1
+      }
+    },
+    "swarm": {
+      "prompt": "club bounce house beat for a summer party",
+      "tags": [],
+      "retry_count": 0,
+      "approved": true,
+      "sample_paths": {},
+      "mood_analysis": {
+        "valence": 0.7100000000000001,
+        "arousal": 0.77,
+        "genre": "house"
+      },
+      "genre": "house",
+      "bpm": 125,
+      "scale": "major",
+      "key_root": "D#",
+      "structure": "intro:8,groove:8,drop:8,break:8,drop:8,outro:8",
+      "chord_progression": [
+        0,
+        5,
+        3,
+        4
+      ],
+      "swing_factor": 0.05,
+      "drum_pattern": {
+        "kick": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "snare": [
+          4,
+          12
+        ],
+        "hats": [
+          [
+            2,
+            false
+          ],
+          [
+            6,
+            false
+          ],
+          [
+            10,
+            false
+          ],
+          [
+            14,
+            false
+          ]
+        ],
+        "perc": [
+          3,
+          7,
+          11
+        ]
+      },
+      "sample_pack_genre": "house",
+      "sample_traits": [
+        "bright",
+        "punchy"
+      ],
+      "critic_feedback": "Critic approved progression, groove, and palette."
+    }
+  }
+}

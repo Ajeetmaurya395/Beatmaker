@@ -1,12 +1,29 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import os
 import random
 from typing import TypedDict
+
+from pydantic import BaseModel, Field
+
+try:
+    import instructor
+    from groq import Groq
+except Exception:
+    instructor = None
+    Groq = None
+
+try:
+    import music21
+except Exception:
+    music21 = None
 
 from core.pattern_library import PatternLibraryManager
 from core.reference_analyzer import ReferenceProfile
 from core.taste_profile import TasteProfileManager
+from core.theory_validator import validate_chords
 
 
 class MoodAnalysis(TypedDict):
@@ -24,6 +41,7 @@ class MusicState(TypedDict, total=False):
     genre: str
     structure: str
     chord_progression: list[int]
+    swing_factor: float
     drum_pattern: dict[str, list[int] | list[tuple[int, bool]]]
     sample_paths: dict[str, str]
     sample_pack_genre: str
@@ -32,6 +50,23 @@ class MusicState(TypedDict, total=False):
     critic_feedback: str
     approved: bool
     retry_count: int
+
+
+class DrumPatternBlueprint(BaseModel):
+    kick: list[int] = Field(description="Step indices for the kick drum (0-15)")
+    snare: list[int] = Field(description="Step indices for the snare drum (0-15)")
+    hats: list[tuple[int, bool]] = Field(description="Step indices for the hi-hats (0-15) and whether they are open (True) or closed (False)")
+    perc: list[int] = Field(description="Step indices for percussion elements (0-15)")
+
+
+class MusicalTheoryBlueprint(BaseModel):
+    key_root: str = Field(description="The root note of the key (e.g., C, D#, F)")
+    scale: str = Field(description="The scale (major or minor)")
+    bpm: int = Field(description="The tempo in Beats Per Minute")
+    chord_progression: list[int] = Field(description="A list of integers representing the scale degrees of the chord progression (0-indexed, so 0 is the root chord, 3 is the IV chord, 4 is the V chord, etc.)")
+    swing_factor: float = Field(description="The amount of swing to apply (0.0 to 0.3) to give it human feel")
+    drum_pattern: DrumPatternBlueprint = Field(description="The 16-step drum pattern for the beat")
+    reasoning: str = Field(description="A brief explanation of the musical choices made to achieve the requested mood and genre.")
 
 
 class AutonomousProducerSwarm:
@@ -55,40 +90,6 @@ class AutonomousProducerSwarm:
         "phonk": ("intro:4,drop:8,variation:8,drop:8,outro:4", "intro:4,drop:8,drop:8,variation:8,outro:4"),
         "bollywood": ("alap:4,mukhda:8,antara:8,mukhda:8,outro:4", "intro:4,verse:8,hook:8,verse:8,hook:8"),
         "hindi_indie": ("intro:4,verse:8,hook:8,verse:8,hook:8,outro:4", "intro:4,verse:8,verse:8,hook:8,outro:4"),
-    }
-    PROGRESSIONS = {
-        "major": ([0, 4, 5, 3], [0, 5, 3, 4], [0, 3, 4, 3]),
-        "minor": ([0, 5, 3, 4], [0, 3, 5, 4], [0, 4, 3, 5]),
-    }
-    DRUM_FAMILIES = {
-        "trap": (
-            {"kick": [0, 7, 10, 12], "snare": [4, 12], "hats": [(step, False) for step in range(0, 16, 2)], "perc": [3, 11, 15]},
-            {"kick": [0, 6, 10, 13], "snare": [4, 11, 12], "hats": [(0, False), (2, False), (4, False), (6, False), (8, False), (10, False), (12, False), (14, False), (15, False)], "perc": [1, 7, 13]},
-        ),
-        "drill": (
-            {"kick": [0, 6, 9, 12], "snare": [4, 12], "hats": [(0, False), (2, False), (4, False), (6, False), (8, False), (10, False), (12, False), (14, False), (15, False)], "perc": [2, 7, 13]},
-            {"kick": [0, 7, 11, 14], "snare": [4, 10, 12], "hats": [(0, False), (3, False), (4, False), (6, False), (8, False), (11, False), (12, False), (14, False)], "perc": [1, 6, 12]},
-        ),
-        "lofi": (
-            {"kick": [0, 6, 10], "snare": [4, 12], "hats": [(0, False), (4, False), (8, False), (12, False)], "perc": [6, 14]},
-            {"kick": [0, 8], "snare": [4, 12, 15], "hats": [(2, False), (6, False), (10, False), (14, False)], "perc": [3, 11]},
-        ),
-        "house": (
-            {"kick": [0, 4, 8, 12], "snare": [4, 12], "hats": [(2, False), (4, False), (6, False), (8, False), (10, False), (12, False), (14, False), (15, True)], "perc": [6, 10, 14]},
-            {"kick": [0, 4, 10, 12], "snare": [4, 11, 12], "hats": [(0, False), (2, False), (4, False), (6, False), (8, False), (10, False), (12, False), (14, False), (15, True)], "perc": [3, 7, 11, 15]},
-        ),
-        "phonk": (
-            {"kick": [0, 4, 8, 10, 12], "snare": [4, 10, 12], "hats": [(step, False) for step in range(0, 16, 2)], "perc": [3, 7, 11, 15]},
-            {"kick": [0, 3, 8, 10, 14], "snare": [4, 9, 12], "hats": [(0, False), (2, False), (4, False), (6, False), (8, False), (10, False), (12, False), (14, False), (15, False)], "perc": [1, 5, 9, 13]},
-        ),
-        "bollywood": (
-            {"kick": [0, 8, 12], "snare": [4, 12], "hats": [(0, False), (4, False), (8, False), (12, False)], "perc": [3, 7, 11, 15]},
-            {"kick": [0, 6, 10, 12], "snare": [4, 10, 12], "hats": [(2, False), (6, False), (10, False), (14, False)], "perc": [2, 7, 13]},
-        ),
-        "hindi_indie": (
-            {"kick": [0, 10], "snare": [8], "hats": [(0, False), (4, False), (8, False), (12, False)], "perc": [6, 14]},
-            {"kick": [0, 8], "snare": [8, 15], "hats": [(2, False), (6, False), (10, False), (14, False)], "perc": [5, 13]},
-        ),
     }
 
     def plan(
@@ -131,7 +132,11 @@ class AutonomousProducerSwarm:
         rng = random.Random(seed)
         tags = pattern_library.normalize_tags(list(state.get("tags", [])))
         prompt_tags = pattern_library.extract_tags_from_text(prompt)
-        preferred_tags = taste_profile.preferred_tags(rng, limit=3) if not self._has_explicit_genre_word(prompt) else []
+        preferred_tags = (
+            taste_profile.preferred_tags(rng, limit=2)
+            if not self._has_explicit_genre_word(prompt) and not prompt_tags
+            else []
+        )
         tags = pattern_library.normalize_tags([*tags, *prompt_tags, *preferred_tags])
 
         valence = 0.55
@@ -164,32 +169,137 @@ class AutonomousProducerSwarm:
         return state
 
     def _theorist_node(self, state: MusicState, seed: int) -> MusicState:
-        rng = random.Random(seed + (state.get("retry_count", 0) * 101))
+        prompt = state.get("prompt", "")
         genre = state.get("genre", "trap")
-        scale = state.get("scale", "minor")
-        progression_pool = self.PROGRESSIONS["minor" if scale == "minor" else "major"]
-        progression_index = self._pick_index(state["prompt"], f"{genre}-progression", len(progression_pool), state.get("retry_count", 0))
-        progression = list(progression_pool[progression_index])
-        drum_families = self.DRUM_FAMILIES.get(genre, self.DRUM_FAMILIES["trap"])
-        family_index = self._pick_index(state["prompt"], f"{genre}-drums", len(drum_families), state.get("retry_count", 0))
-        chosen_family = drum_families[family_index]
+        mood = state.get("mood_analysis", {})
+        critic_feedback = state.get("critic_feedback", "")
+        retry_count = state.get("retry_count", 0)
 
-        if state.get("retry_count", 0) > 0 and state.get("mood_analysis", {}).get("arousal", 0.5) < 0.45:
-            chosen_family = dict(chosen_family)
-            chosen_family["hats"] = list(chosen_family["hats"])[:4]
-            chosen_family["perc"] = list(chosen_family["perc"])[:2]
+        blueprint = self._query_theorist_llm(
+            prompt=prompt,
+            genre=genre,
+            mood=mood,
+            critic_feedback=critic_feedback,
+            seed=seed + (retry_count * 101),
+        )
 
-        if rng.random() < 0.25 and genre not in {"hindi_indie", "house"}:
-            progression = progression[1:] + progression[:1]
-
-        state["chord_progression"] = progression
+        state["key_root"] = blueprint.key_root
+        state["scale"] = blueprint.scale
+        state["bpm"] = blueprint.bpm
+        state["chord_progression"] = blueprint.chord_progression
+        state["swing_factor"] = blueprint.swing_factor
         state["drum_pattern"] = {
-            "kick": list(chosen_family["kick"]),
-            "snare": list(chosen_family["snare"]),
-            "hats": list(chosen_family["hats"]),
-            "perc": list(chosen_family["perc"]),
+            "kick": blueprint.drum_pattern.kick,
+            "snare": blueprint.drum_pattern.snare,
+            "hats": blueprint.drum_pattern.hats,
+            "perc": blueprint.drum_pattern.perc,
         }
         return state
+
+    def _query_theorist_llm(
+        self, prompt: str, genre: str, mood: dict, critic_feedback: str, seed: int
+    ) -> MusicalTheoryBlueprint:
+        # The Startup Move: Temperature Control
+        # High Temperature for artistic "Indie/Bollywood" experimentation
+        # Low Temperature for corporate/background beats
+        temperature = 0.7 if genre in {"hindi_indie", "bollywood", "house"} else 0.3
+        
+        system_prompt = f"""You are a master music producer.
+Analyze the user's prompt and output ONLY valid JSON matching this schema:
+{{
+  "key_root": "C",
+  "scale": "minor",
+  "bpm": 92,
+  "chord_progression": [0, 5, 3, 4],
+  "swing_factor": 0.08,
+  "drum_pattern": {{
+    "kick": [0, 8, 12],
+    "snare": [4, 12],
+    "hats": [[0, false], [2, false], [4, false], [6, false], [8, false], [10, false], [12, false], [14, false]],
+    "perc": [3, 7, 11]
+  }},
+  "reasoning": "short explanation"
+}}
+
+Rules:
+- chord_progression must use 0-indexed scale degrees from 0 to 6 only.
+- key_root must be one of C, C#, D, D#, E, F, F#, G, G#, A, A#, B.
+- scale must be "major" or "minor".
+- bpm must be between 70 and 160.
+- hats must be a list of [step, is_open] pairs where step is 0-15 and is_open is true/false.
+- Do not include markdown fences.
+
+User Prompt: {prompt}
+Target Genre: {genre}
+Mood Valence: {mood.get('valence', 0.5)}
+Mood Arousal: {mood.get('arousal', 0.5)}
+
+{f"CRITIC FEEDBACK: {critic_feedback} (Please self-correct your draft based on this feedback)" if critic_feedback else ""}
+"""
+        api_key = os.environ.get("GROQ_API_KEY")
+        if Groq and api_key:
+            try:
+                client = Groq(api_key=api_key)
+                if instructor:
+                    wrapped = instructor.from_groq(client)
+                    blueprint = wrapped.chat.completions.create(
+                        model="llama3-70b-8192",
+                        response_model=MusicalTheoryBlueprint,
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": f"Compose a beat for: {prompt}"}
+                        ],
+                        temperature=temperature,
+                    )
+                    return blueprint
+
+                completion = client.chat.completions.create(
+                    model="llama3-70b-8192",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": f"Compose a beat for: {prompt}"}
+                    ],
+                    temperature=temperature,
+                    response_format={"type": "json_object"},
+                )
+                content = completion.choices[0].message.content or "{}"
+                return MusicalTheoryBlueprint.model_validate_json(content)
+            except Exception as e:
+                print(f"Groq LLM generation failed: {e}. Falling back to mock generator.")
+
+        # Fallback simulated reasoning based on genre and mood
+        rng = random.Random(seed)
+        is_sad = mood.get("valence", 0.5) < 0.5
+        scale = "minor" if is_sad else "major"
+        key_root = rng.choice(["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"])
+        
+        if genre == "hindi_indie":
+            prog = [0, 4, 5, 3] if not is_sad else [0, 5, 3, 4]
+            kick, snare = [0, 10], [8]
+            hats = [(0, False), (4, False), (8, False), (12, False)]
+        elif genre == "house":
+            prog = [0, 3, 4, 3] if is_sad else [0, 5, 3, 4]
+            kick, snare = [0, 4, 8, 12], [4, 12]
+            hats = [(2, False), (6, False), (10, False), (14, False)]
+        else: # trap/drill default
+            prog = [0, 3, 5, 4] if is_sad else [0, 4, 5, 3]
+            kick, snare = [0, 7, 10, 12], [4, 12]
+            hats = [(i, False) for i in range(0, 16, 2)]
+
+        return MusicalTheoryBlueprint(
+            key_root=key_root,
+            scale=scale,
+            bpm=rng.randint(80, 150),
+            chord_progression=prog,
+            swing_factor=0.15 if genre in {"boom_bap", "lofi"} else 0.05,
+            drum_pattern=DrumPatternBlueprint(
+                kick=kick,
+                snare=snare,
+                hats=hats,
+                perc=[3, 7, 11]
+            ),
+            reasoning=f"Selected {key_root} {scale} to match the {'sad' if is_sad else 'happy'} mood. Adjusted temperature to {temperature} for {genre}."
+        )
 
     def _curator_node(self, state: MusicState, taste_profile: TasteProfileManager, seed: int) -> MusicState:
         rng = random.Random(seed)
@@ -227,13 +337,18 @@ class AutonomousProducerSwarm:
         feedback: list[str] = []
         approved = True
         progression = state.get("chord_progression", [])
+        key_root = state.get("key_root", "C")
+        scale = state.get("scale", "minor")
         drum_pattern = state.get("drum_pattern", {})
         genre = state.get("genre", "trap")
         mood = state.get("mood_analysis", {"valence": 0.5, "arousal": 0.5})
 
-        if not progression or any(degree < 0 or degree > 6 for degree in progression):
+        # 1. Run theory validation (The Critic's Ear)
+        is_valid, error = validate_chords(key_root, scale, progression, genre=genre)
+        
+        if not is_valid:
             approved = False
-            feedback.append("Invalid progression degrees; reroll theory.")
+            feedback.append(f"The previous chord progression was invalid: {error}. Please generate a new one.")
 
         hats = drum_pattern.get("hats", [])
         kick = drum_pattern.get("kick", [])
@@ -273,7 +388,9 @@ class AutonomousProducerSwarm:
         if any(cue in prompt for cue in ("drill", "street", "aggressive", "menacing")):
             return "drill" if arousal > 0.6 else "trap"
         if any(cue in prompt for cue in ("late night", "dreamy", "warm", "soft")):
-            return "hindi_indie" if "desi" in set(tags) else "lofi"
+            if "hindi_indie" in set(tags) or "aditya_rikhari_like" in set(tags):
+                return "hindi_indie"
+            return "lofi"
         if any(cue in prompt for cue in ("acoustic", "indie", "guitar", "aditya", "rikhari", "romantic")):
             return "hindi_indie"
         if any(cue in prompt for cue in ("bollywood", "jhankar", "desi pop")):

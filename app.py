@@ -4,9 +4,11 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional, List, Union
 import json
+import os
 from pathlib import Path
 import random
 
+from core.env_utils import load_env_file
 from core.engine import BeatmakerEngine
 from core.drum_extractor import DrumPatternExtractor
 from core.dynamic_sample_pack import get_available_genres
@@ -14,6 +16,8 @@ from core.pattern_library import PatternLibraryManager
 from core.reference_analyzer import ReferenceAnalyzer
 from core.hub_utils import HubManager, get_indie_recommendations
 import shutil
+
+load_env_file()
 
 app = FastAPI(title="Beatmaker API")
 
@@ -74,7 +78,7 @@ async def generate_beat(req: GenerateRequest):
             reference_mode=req.reference_mode,
             tags=tags,
             voice_provider=req.voice_provider,
-            foundation_url=req.foundation_url,
+            foundation_url=req.foundation_url or os.getenv("FOUNDATION_URL"),
         )
         
         return {

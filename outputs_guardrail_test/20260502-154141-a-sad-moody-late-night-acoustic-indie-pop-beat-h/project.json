@@ -1,0 +1,267 @@
+{
+  "spec": {
+    "prompt": "a sad, moody, late night acoustic indie pop beat [hindi indie]",
+    "genre": "lofi",
+    "bpm": 107,
+    "key_root": "C",
+    "scale": "minor",
+    "swing": 0.14,
+    "seed": 1885951306,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.4
+      },
+      {
+        "name": "loop",
+        "bars": 8,
+        "energy": 0.68
+      },
+      {
+        "name": "variation",
+        "bars": 8,
+        "energy": 0.76
+      },
+      {
+        "name": "loop",
+        "bars": 8,
+        "energy": 0.68
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=lofi, taste_strength=0.35, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.4
+    },
+    {
+      "name": "loop",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.68
+    },
+    {
+      "name": "variation",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.76
+    },
+    {
+      "name": "loop",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.68
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 152,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 32,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 512,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 376,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 115,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 183,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 95,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-05-02T15:42:20",
+  "render": {
+    "sample_pack": "hindi_indie-1885951306 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "hindi_indie-1885951306",
+    "sample_pack_path": "outputs_guardrail_test/_auto_packs/hindi_indie-1885951306",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=hindi_indie, bpm=138, key=C# minor, tags=aditya_rikhari_like,desi, traits=airy,bright, structures=0, entries=1, active_genre=lofi, taste_strength=0.35, reference_mode=inspire",
+    "provider_metadata": {
+      "voice_provider": "local"
+    }
+  },
+  "analysis": {
+    "structure_signature": "intro:4|loop:8|variation:8|loop:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,10,14,6": 3,
+        "10,14,2,6": 3,
+        "0,10,14,2,6": 24,
+        "0,14,2,6": 1,
+        "0,10,14,2": 1
+      },
+      "snare": {
+        "10": 32
+      },
+      "hats": {
+        "0c,10c,11c,12c,13c,14c,15c,1c,2c,3c,4c,5c,6c,7c,8c,9c": 32
+      },
+      "perc": {
+        "1,10,11,13,14,2,3,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,7,9": 1,
+        "1,11,13,14,15,2,3,5,6,7,9": 1,
+        "10,11,13,14,15,2,3,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,6,7,9": 24,
+        "1,10,11,13,14,15,2,5,6,7,9": 1,
+        "1,10,11,14,15,2,3,5,6,7,9": 1,
+        "1,10,11,13,14,15,2,3,5,6,7": 1,
+        "1,10,11,13,15,2,3,5,6,7,9": 1
+      },
+      "bass_808": {
+        "0.00/1.00,1.00/0.50,2.00/1.00": 7,
+        "0.00/1.25,1.50/0.50,2.00/0.90": 2,
+        "0.00/1.00,1.00/0.50,2.00/1.00,3.00/0.75": 13,
+        "0.00/1.00,2.00/1.00,3.00/0.75": 2,
+        "0.00/0.75,0.75/0.25,2.00/0.90,3.50/0.35": 1,
+        "0.00/1.25,1.50/0.50,2.00/0.90,3.25/0.50": 3,
+        "0.00/0.75,2.00/0.90,2.75/0.25,3.50/0.35": 1,
+        "0.00/0.75,2.00/0.90,2.75/0.25": 1,
+        "0.00/0.75,0.75/0.25,2.00/0.90,2.75/0.25,3.50/0.35": 1,
+        "0.00/1.00,2.00/1.00": 1
+      },
+      "chords": {
+        "0.00/3.80,0.00/3.80,0.00/3.80,2.00/3.80,2.00/3.80,2.00/3.80": 27,
+        "0.00/3.80,0.00/3.80,0.00/3.80": 4,
+        "0.00/3.80,0.00/3.80,0.00/3.80,1.50/3.80,1.50/3.80,1.50/3.80,3.00/3.80,3.00/3.80,3.00/3.80": 1
+      },
+      "lead": {
+        "0.50/0.75,2.00/0.75,3.25/0.75": 5,
+        "0.00/0.75,1.00/0.75,2.50/0.75": 26,
+        "0.00/0.75,1.00/0.75": 1
+      }
+    },
+    "swarm": {
+      "prompt": "a sad, moody, late night acoustic indie pop beat",
+      "tags": [
+        "hindi_indie",
+        "moody"
+      ],
+      "retry_count": 0,
+      "approved": true,
+      "sample_paths": {},
+      "mood_analysis": {
+        "valence": 0.33000000000000007,
+        "arousal": 0.55,
+        "genre": "lofi"
+      },
+      "genre": "lofi",
+      "bpm": 107,
+      "scale": "minor",
+      "key_root": "C",
+      "structure": "intro:4,loop:8,variation:8,loop:8,outro:4",
+      "chord_progression": [
+        1,
+        4,
+        6,
+        5
+      ],
+      "swing_factor": 0.15,
+      "drum_pattern": {
+        "kick": [
+          0,
+          7,
+          10,
+          12
+        ],
+        "snare": [
+          4,
+          12
+        ],
+        "hats": [
+          [
+            0,
+            false
+          ],
+          [
+            2,
+            false
+          ],
+          [
+            4,
+            false
+          ],
+          [
+            6,
+            false
+          ],
+          [
+            8,
+            false
+          ],
+          [
+            10,
+            false
+          ],
+          [
+            12,
+            false
+          ],
+          [
+            14,
+            false
+          ]
+        ],
+        "perc": [
+          3,
+          7,
+          11
+        ]
+      },
+      "sample_pack_genre": "hindi_indie",
+      "sample_traits": [
+        "airy",
+        "bright",
+        "organic",
+        "punchy",
+        "warm"
+      ],
+      "critic_feedback": "Critic approved progression, groove, and palette."
+    }
+  }
+}

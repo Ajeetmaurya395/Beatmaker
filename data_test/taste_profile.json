@@ -18,6 +18,8 @@
     "energy_scores": {
       "1.00": 2.0
     },
+    "tag_scores": {},
+    "sample_trait_scores": {},
     "structure_scores": {
       "intro:4|hook:8|verse:16|hook:8|outro:4": 7.5
     },
@@ -174,6 +176,8 @@
       "C# minor": 4.5
     },
     "energy_scores": {},
+    "tag_scores": {},
+    "sample_trait_scores": {},
     "structure_scores": {
       "intro:4|hook:8|verse:16|hook:8|outro:4": 4.5
     },

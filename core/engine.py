@@ -51,16 +51,13 @@ class BeatmakerEngine:
         prompt_seed = int(hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:8], 16)
         preference_rng = random.Random(seed if seed is not None else prompt_seed)
         explicit_style_cue = self._has_explicit_style_cue(prompt)
-        normalized_tags = self.pattern_library.normalize_tags(tags or [])
-        if not normalized_tags:
-            normalized_tags = self.pattern_library.extract_tags_from_text(prompt)
-            if not explicit_style_cue:
-                normalized_tags = self.pattern_library.normalize_tags(
-                    [*normalized_tags, *self.taste_profile.preferred_tags(preference_rng, limit=3)]
-                )
-        if not normalized_tags and not explicit_style_cue:
-            normalized_tags = self.pattern_library.normalize_tags(self.taste_profile.preferred_tags(preference_rng, limit=3))
-        prompt_for_spec = self._prompt_with_tags(prompt, normalized_tags)
+        explicit_tags = self.pattern_library.normalize_tags(tags or [])
+        prompt_tags = self.pattern_library.extract_tags_from_text(prompt)
+        fallback_tags: list[str] = []
+        if not explicit_style_cue and not explicit_tags and not prompt_tags:
+            fallback_tags = self.taste_profile.preferred_tags(preference_rng, limit=2)
+        normalized_tags = self.pattern_library.normalize_tags([*explicit_tags, *prompt_tags, *fallback_tags])
+        prompt_for_spec = self._prompt_with_tags(prompt, [*explicit_tags, *prompt_tags])
         reference_profile = None
         pattern_hints = None
         if reference_path:
@@ -91,7 +88,6 @@ class BeatmakerEngine:
             seed=seed if seed is not None else prompt_seed,
         )
         normalized_tags = self.pattern_library.normalize_tags([*normalized_tags, *swarm_state.get("tags", [])])
-        prompt_for_spec = self._prompt_with_tags(prompt, normalized_tags)
         spec = self.prompt_engineer.build_spec(
             prompt=prompt_for_spec,
             bpm_override=bpm_override or swarm_state.get("bpm"),
@@ -123,8 +119,9 @@ class BeatmakerEngine:
             auto_pack_root.mkdir(parents=True, exist_ok=True)
             sample_pack_genre = swarm_state.get("sample_pack_genre") or self._choose_sample_pack_genre(spec, normalized_tags, preference_rng)
             sample_traits = self._merge_unique(
+                self._sample_traits_from_prompt(prompt),
                 swarm_state.get("sample_traits", []),
-                self.taste_profile.preferred_sample_traits(preference_rng, limit=4),
+                [] if explicit_style_cue else self.taste_profile.preferred_sample_traits(preference_rng, limit=4),
             )
             auto_pack_dir = auto_pack_root / f"{sample_pack_genre}-{spec.seed}"
             if not auto_pack_dir.exists():
@@ -308,9 +305,6 @@ class BeatmakerEngine:
             return "house"
         if "bolly_trap" in tag_set or "desi" in tag_set:
             return "bollywood" if spec.bpm < 120 else "house"
-        preferred_tags = set(self.taste_profile.preferred_tags(rng, limit=3))
-        if "hindi_indie" in preferred_tags and spec.genre in {"lofi", "boom_bap", "hindi_indie"}:
-            return "hindi_indie"
         return spec.genre
 
     def _has_explicit_style_cue(self, prompt: str) -> bool:
@@ -343,3 +337,20 @@ class BeatmakerEngine:
                 if item not in merged:
                     merged.append(item)
         return merged
+
+    def _sample_traits_from_prompt(self, prompt: str) -> list[str]:
+        prompt_lower = prompt.lower()
+        traits: list[str] = []
+        mapping = {
+            "warm": ("warm", "vintage", "dusty"),
+            "soft": ("soft", "gentle", "subtle", "mellow"),
+            "airy": ("airy", "open", "spacious", "dreamy"),
+            "organic": ("organic", "acoustic", "live", "natural"),
+            "punchy": ("punchy", "hard", "aggressive", "heavy", "knocking"),
+            "bright": ("bright", "shiny", "glossy"),
+            "laid_back": ("laid back", "laid-back", "lazy", "chill"),
+        }
+        for trait, cues in mapping.items():
+            if any(cue in prompt_lower for cue in cues):
+                traits.append(trait)
+        return traits

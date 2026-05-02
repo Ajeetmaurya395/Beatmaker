@@ -4,3 +4,6 @@ fastapi
 uvicorn
 python-multipart
 lightning-sdk
+instructor
+groq
+music21

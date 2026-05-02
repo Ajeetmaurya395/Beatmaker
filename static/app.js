@@ -105,17 +105,29 @@ function resizeCanvas() {
 async function fetchGenres() {
     const res = await fetch(`${API_BASE}/genres`);
     const data = await res.json();
-    
-    els.genreChips.innerHTML = data.genres.map(g => 
-        `<div class="chip" data-genre="${g}">${g}</div>`
-    ).join('');
+
+    const chips = ['auto', ...data.genres];
+    els.genreInput.value = '';
+    els.genreChips.innerHTML = chips.map(g => {
+        const label = g === 'auto' ? 'auto' : g;
+        const activeClass = g === 'auto' ? ' active' : '';
+        return `<div class="chip${activeClass}" data-genre="${g === 'auto' ? '' : g}">${label}</div>`;
+    }).join('');
 
     // Setup chip selection
     document.querySelectorAll('.chip').forEach(chip => {
         chip.addEventListener('click', () => {
+            const selectedGenre = chip.dataset.genre || '';
+            const alreadyActive = chip.classList.contains('active') && selectedGenre;
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            if (alreadyActive) {
+                const autoChip = Array.from(document.querySelectorAll('.chip')).find(c => (c.dataset.genre || '') === '');
+                if (autoChip) autoChip.classList.add('active');
+                els.genreInput.value = '';
+                return;
+            }
             chip.classList.add('active');
-            els.genreInput.value = chip.dataset.genre;
+            els.genreInput.value = selectedGenre;
         });
     });
 }

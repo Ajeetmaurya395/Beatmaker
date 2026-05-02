@@ -1,0 +1,263 @@
+{
+  "spec": {
+    "prompt": "dusty lofi beat with jazzy keys",
+    "genre": "boom_bap",
+    "bpm": 91,
+    "key_root": "D",
+    "scale": "major",
+    "swing": 0.18,
+    "seed": 364930862,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.4
+      },
+      {
+        "name": "loop",
+        "bars": 8,
+        "energy": 0.68
+      },
+      {
+        "name": "verse",
+        "bars": 8,
+        "energy": 0.72
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, tags=none, traits=none, structures=1, entries=9, active_genre=boom_bap, taste_strength=0.15, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.4
+    },
+    {
+      "name": "loop",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.68
+    },
+    {
+      "name": "verse",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.72
+    },
+    {
+      "name": "hook",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 125,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 68,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 261,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 92,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 64,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 123,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 72,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-05-02T16:09:16",
+  "render": {
+    "sample_pack": "boom_bap-364930862 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "boom_bap-364930862",
+    "sample_pack_path": "tmp_eval_outputs2/_auto_packs/boom_bap-364930862",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, tags=none, traits=none, structures=1, entries=9, active_genre=boom_bap, taste_strength=0.15, reference_mode=inspire",
+    "provider_metadata": {
+      "voice_provider": "local"
+    }
+  },
+  "analysis": {
+    "structure_signature": "intro:4|loop:8|verse:8|hook:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,12,7": 4,
+        "10,12,7": 2,
+        "0,10,12": 2,
+        "0,10,12,7": 19,
+        "0,10,12,7,9": 2,
+        "0,10,12,6,7": 2,
+        "0,10,12,3,7": 1
+      },
+      "snare": {
+        "12,4": 28,
+        "12,3,4": 1,
+        "12,15,4": 2,
+        "12,4,9": 1
+      },
+      "hats": {
+        "0c,10c,12c,14c,2c,4c,6c,8c": 29,
+        "0c,10c,12c,13c,14c,2c,4c,6c,7c,8c": 2,
+        "0c,10c,12c,14c,2c,4c,6c,7c,8c": 1
+      },
+      "perc": {
+        "11,7": 3,
+        "3,7": 3,
+        "11,3,7": 20,
+        "11,3,7,9": 1,
+        "11,3,6,7": 1,
+        "11,14,3,7": 1,
+        "1,11,3,7": 1,
+        "11,3": 2
+      },
+      "bass_808": {
+        "0.00/1.50,2.00/1.50": 32
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50,2.00/3.50,2.00/3.50,2.00/3.50": 4,
+        "0.00/3.50,0.00/3.50,0.00/3.50,1.50/3.50,1.50/3.50,1.50/3.50,3.00/3.50,3.00/3.50,3.00/3.50": 1,
+        "0.00/3.50,0.00/3.50,0.00/3.50": 19,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 6,
+        "0.00/2.75,0.00/2.75,0.00/2.75,1.50/2.75,1.50/2.75,1.50/2.75,3.00/2.75,3.00/2.75,3.00/2.75": 1,
+        "0.00/2.75,0.00/2.75,0.00/2.75,2.00/2.75,2.00/2.75,2.00/2.75": 1
+      },
+      "lead": {
+        "_": 8,
+        "0.50/0.75,1.75/0.75,3.25/0.75": 18,
+        "0.00/0.75,1.50/0.75,2.75/0.75": 5,
+        "1.00/0.75,2.25/0.75,3.00/0.75": 1
+      }
+    },
+    "swarm": {
+      "prompt": "dusty lofi beat with jazzy keys",
+      "tags": [
+        "lofi"
+      ],
+      "retry_count": 0,
+      "approved": true,
+      "sample_paths": {},
+      "mood_analysis": {
+        "valence": 0.55,
+        "arousal": 0.55,
+        "genre": "boom_bap"
+      },
+      "genre": "boom_bap",
+      "bpm": 91,
+      "scale": "major",
+      "key_root": "D",
+      "structure": "intro:4,loop:8,verse:8,hook:8,outro:4",
+      "chord_progression": [
+        0,
+        4,
+        5,
+        3
+      ],
+      "swing_factor": 0.15,
+      "drum_pattern": {
+        "kick": [
+          0,
+          7,
+          10,
+          12
+        ],
+        "snare": [
+          4,
+          12
+        ],
+        "hats": [
+          [
+            0,
+            false
+          ],
+          [
+            2,
+            false
+          ],
+          [
+            4,
+            false
+          ],
+          [
+            6,
+            false
+          ],
+          [
+            8,
+            false
+          ],
+          [
+            10,
+            false
+          ],
+          [
+            12,
+            false
+          ],
+          [
+            14,
+            false
+          ]
+        ],
+        "perc": [
+          3,
+          7,
+          11
+        ]
+      },
+      "sample_pack_genre": "boom_bap",
+      "sample_traits": [
+        "punchy"
+      ],
+      "critic_feedback": "Critic approved progression, groove, and palette."
+    }
+  }
+}

@@ -1,0 +1,281 @@
+{
+  "spec": {
+    "prompt": "dark street drill beat with heavy 808s [moody]",
+    "genre": "drill",
+    "bpm": 146,
+    "key_root": "E",
+    "scale": "minor",
+    "swing": 0.11,
+    "seed": 1135843457,
+    "stems": [
+      "kick",
+      "snare",
+      "hats",
+      "perc",
+      "bass_808",
+      "chords",
+      "lead"
+    ],
+    "sections": [
+      {
+        "name": "intro",
+        "bars": 4,
+        "energy": 0.4
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "verse",
+        "bars": 8,
+        "energy": 0.72
+      },
+      {
+        "name": "hook",
+        "bars": 8,
+        "energy": 0.92
+      },
+      {
+        "name": "outro",
+        "bars": 4,
+        "energy": 0.34
+      }
+    ],
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, tags=none, traits=none, structures=1, entries=9, active_genre=drill, taste_strength=0.15, reference_mode=inspire"
+  },
+  "markers": [
+    {
+      "name": "intro",
+      "start_bar": 0,
+      "bars": 4,
+      "energy": 0.4
+    },
+    {
+      "name": "hook",
+      "start_bar": 4,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "verse",
+      "start_bar": 12,
+      "bars": 8,
+      "energy": 0.72
+    },
+    {
+      "name": "hook",
+      "start_bar": 20,
+      "bars": 8,
+      "energy": 0.92
+    },
+    {
+      "name": "outro",
+      "start_bar": 28,
+      "bars": 4,
+      "energy": 0.34
+    }
+  ],
+  "stems": {
+    "kick": {
+      "note_count": 129,
+      "wav": "kick.wav",
+      "midi": "kick.mid"
+    },
+    "snare": {
+      "note_count": 73,
+      "wav": "snare.wav",
+      "midi": "snare.mid"
+    },
+    "hats": {
+      "note_count": 269,
+      "wav": "hats.wav",
+      "midi": "hats.mid"
+    },
+    "perc": {
+      "note_count": 98,
+      "wav": "perc.wav",
+      "midi": "perc.mid"
+    },
+    "bass_808": {
+      "note_count": 131,
+      "wav": "bass_808.wav",
+      "midi": "bass_808.mid"
+    },
+    "chords": {
+      "note_count": 117,
+      "wav": "chords.wav",
+      "midi": "chords.mid"
+    },
+    "lead": {
+      "note_count": 96,
+      "wav": "lead.wav",
+      "midi": "lead.mid"
+    }
+  },
+  "generated_at": "2026-05-02T16:07:04",
+  "render": {
+    "sample_pack": "drill-1135843457 (hats_closed, hats_open, kick, perc, snare)",
+    "sample_pack_name": "drill-1135843457",
+    "sample_pack_path": "tmp_eval_outputs2/_auto_packs/drill-1135843457",
+    "reference_summary": null,
+    "learned_summary": "profile=taste_profile.json, genre=phonk, bpm=138, key=G minor, tags=none, traits=none, structures=1, entries=9, active_genre=drill, taste_strength=0.15, reference_mode=inspire",
+    "provider_metadata": {
+      "voice_provider": "local"
+    }
+  },
+  "analysis": {
+    "structure_signature": "intro:4|hook:8|verse:8|hook:8|outro:4",
+    "pattern_summary": {
+      "kick": {
+        "0,10,7": 5,
+        "0,10,12": 1,
+        "0,10,12,7": 15,
+        "0,10,12,7,9": 2,
+        "0,10,12,3,7": 1,
+        "0,10,12,6,7": 3,
+        "0,10,12,15,7": 1,
+        "0,1,10,12,7": 1,
+        "0,10,12,14,7": 1,
+        "0,12,7": 2
+      },
+      "snare": {
+        "12,4": 23,
+        "12,14,4": 3,
+        "12,15,4": 1,
+        "12,4,9": 1,
+        "1,12,4": 2,
+        "12,4,6": 1,
+        "12,3,4": 1
+      },
+      "hats": {
+        "0c,10c,12c,14c,2c,4c,6c,8c": 23,
+        "0c,10c,12c,13c,14c,15c,2c,4c,6c,8c": 1,
+        "0c,10c,12c,14c,15c,2c,4c,5c,6c,8c": 1,
+        "0c,10c,12c,14c,2c,4c,6c,7c,8c": 3,
+        "0c,10c,12c,14c,15c,2c,4c,6c,8c": 2,
+        "0c,10c,12c,13c,14c,2c,4c,6c,7c,8c": 1,
+        "0c,10c,12c,14c,2c,4c,5c,6c,7c,8c": 1
+      },
+      "perc": {
+        "3,7": 4,
+        "11,3": 2,
+        "11,3,7": 14,
+        "11,15,3,7": 2,
+        "1,11,3,7": 3,
+        "11,3,6,7": 1,
+        "11,3,7,9": 4,
+        "11,7": 2
+      },
+      "bass_808": {
+        "0.00/0.75,0.75/0.25,2.00/0.90": 8,
+        "0.00/0.75,0.75/0.25,2.00/0.90,2.75/0.25,3.50/0.35": 13,
+        "0.00/0.75,2.00/0.90,2.75/0.25,3.50/0.35": 2,
+        "0.00/0.75,0.75/0.25,2.00/0.90,3.50/0.35": 3,
+        "0.00/0.75,0.75/0.25,2.00/0.90,2.75/0.25": 2,
+        "0.00/1.00,2.00/1.00,3.00/0.75": 1,
+        "0.00/1.00,1.00/0.50,2.00/1.00,3.00/0.75": 2,
+        "0.00/1.25,2.00/0.90,3.25/0.50": 1
+      },
+      "chords": {
+        "0.00/3.50,0.00/3.50,0.00/3.50": 13,
+        "0.00/3.50,0.00/3.50,0.00/3.50,2.00/3.50,2.00/3.50,2.00/3.50": 3,
+        "0.00/2.75,0.00/2.75,0.00/2.75": 13,
+        "0.00/2.75,0.00/2.75,0.00/2.75,2.00/2.75,2.00/2.75,2.00/2.75": 2,
+        "0.00/2.75,0.00/2.75,0.00/2.75,1.50/2.75,1.50/2.75,1.50/2.75,3.00/2.75,3.00/2.75,3.00/2.75": 1
+      },
+      "lead": {
+        "_": 8,
+        "0.75/0.40,1.50/0.40,2.50/0.40,3.25/0.40": 20,
+        "0.25/0.40,1.75/0.40,2.50/0.40,3.00/0.40": 1,
+        "0.50/0.40,1.25/0.40,2.00/0.40,3.50/0.40": 3
+      }
+    },
+    "swarm": {
+      "prompt": "dark street drill beat with heavy 808s",
+      "tags": [
+        "drill",
+        "moody"
+      ],
+      "retry_count": 0,
+      "approved": true,
+      "sample_paths": {},
+      "mood_analysis": {
+        "valence": 0.33000000000000007,
+        "arousal": 0.77,
+        "genre": "drill"
+      },
+      "genre": "drill",
+      "bpm": 146,
+      "scale": "minor",
+      "key_root": "E",
+      "structure": "intro:4,hook:8,verse:8,hook:8,outro:4",
+      "chord_progression": [
+        0,
+        3,
+        5,
+        4
+      ],
+      "swing_factor": 0.05,
+      "drum_pattern": {
+        "kick": [
+          0,
+          7,
+          10,
+          12
+        ],
+        "snare": [
+          4,
+          12
+        ],
+        "hats": [
+          [
+            0,
+            false
+          ],
+          [
+            2,
+            false
+          ],
+          [
+            4,
+            false
+          ],
+          [
+            6,
+            false
+          ],
+          [
+            8,
+            false
+          ],
+          [
+            10,
+            false
+          ],
+          [
+            12,
+            false
+          ],
+          [
+            14,
+            false
+          ]
+        ],
+        "perc": [
+          3,
+          7,
+          11
+        ]
+      },
+      "sample_pack_genre": "drill",
+      "sample_traits": [
+        "punchy",
+        "warm"
+      ],
+      "critic_feedback": "Critic approved progression, groove, and palette."
+    }
+  }
+}

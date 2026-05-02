@@ -10,16 +10,16 @@ from core.drum_extractor import DrumPattern
 
 class PatternLibraryManager:
     TAG_ALIASES = {
-        "desi": {"desi", "hindi", "bollywood", "hindi_indie", "indian"},
-        "hindi_indie": {"hindi_indie", "indie", "prateek", "kuhad", "indie_pop", "acoustic", "aditya_rikhari_like", "aditya", "rikhari"},
-        "aditya_rikhari_like": {"aditya_rikhari_like", "aditya", "rikhari", "hindi_indie", "moody_acoustic"},
-        "bolly_trap": {"bolly_trap", "bollywood", "desi", "trap"},
-        "ritviz_like": {"ritviz_like", "ritviz", "desi_house", "electronic", "dance"},
+        "desi": {"desi", "bollywood", "indian", "hindi"},
+        "hindi_indie": {"hindi_indie", "hindi indie", "prateek", "kuhad", "prateek kuhad", "aditya_rikhari_like", "aditya", "rikhari", "aditya rikhari"},
+        "aditya_rikhari_like": {"aditya_rikhari_like", "aditya", "rikhari", "aditya rikhari"},
+        "bolly_trap": {"bolly_trap", "bollywood trap", "desi trap"},
+        "ritviz_like": {"ritviz_like", "ritviz", "desi_house", "desi house"},
         "moody": {"moody", "sad", "dark", "night", "melancholy"},
-        "lofi": {"lofi", "chill", "jazzy", "soft"},
+        "lofi": {"lofi", "lo-fi", "chillhop", "jazzy"},
         "phonk": {"phonk", "drift", "cowbell"},
         "drill": {"drill", "uk_drill", "ny_drill"},
-        "trap": {"trap", "808", "hard", "street"},
+        "trap": {"trap", "808"},
     }
 
     def __init__(self, data_root: Path = Path("data")):
@@ -132,7 +132,7 @@ class PatternLibraryManager:
         text_lower = text.lower()
         tags = []
         for canonical, aliases in self.TAG_ALIASES.items():
-            if any(alias.replace("_", " ") in text_lower or alias in text_lower for alias in aliases):
+            if any(self._matches_alias(text_lower, alias) for alias in aliases):
                 tags.append(canonical)
         return self.normalize_tags(tags)
 
@@ -162,3 +162,10 @@ class PatternLibraryManager:
             if aliases:
                 expanded.update(self.normalize_tags(list(aliases)))
         return expanded
+
+    def _matches_alias(self, text: str, alias: str) -> bool:
+        normalized_alias = alias.lower().replace("_", " ").strip()
+        if " " in normalized_alias:
+            return normalized_alias in text
+        tokens = [token.strip("[](),.!?;:'\"") for token in text.split()]
+        return normalized_alias in tokens

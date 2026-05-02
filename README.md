@@ -33,7 +33,13 @@ A high-fidelity, intelligent music production studio designed specifically for t
    pip install -r requirements.txt
    ```
 
-3. **Authenticate Cloud (Optional)**:
+3. **Configure Local Secrets**:
+   ```bash
+   cp .env.example .env
+   ```
+   Then add your local keys like `GROQ_API_KEY` and optional `FOUNDATION_URL`.
+
+4. **Authenticate Cloud (Optional)**:
    ```bash
    .venv/bin/lightning login
    ```
@@ -45,6 +51,11 @@ Start the studio server:
 python app.py
 ```
 Open **`http://localhost:8000`** in your browser to start producing.
+
+The CLI also auto-loads `.env`, so you can run:
+```bash
+python cli.py generate --prompt "moody hindi indie beat"
+```
 
 ## 🤝 Community & Datasets
 This project is built to leverage the amazing contributions from the Desi AI community:

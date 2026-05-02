@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
+from core.env_utils import load_env_file
 from core.engine import BeatmakerEngine
 from core.drum_extractor import DrumPatternExtractor
 from core.pattern_library import PatternLibraryManager
@@ -13,6 +15,7 @@ from core.taste_profile import TasteProfileManager
 
 
 def main() -> None:
+    load_env_file()
     argv = sys.argv[1:]
     commands = {"generate", "ingest", "rate", "profile", "regen"}
     if not argv or argv[0] not in commands:
@@ -149,7 +152,7 @@ def main() -> None:
             reference_mode=args.reference_mode,
             tags=parse_tags(args.tags),
             voice_provider=args.voice_provider,
-            foundation_url=args.foundation_url,
+            foundation_url=args.foundation_url or os.getenv("FOUNDATION_URL"),
         )
 
         print("\n=== Beat Export Complete ===")

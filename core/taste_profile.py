@@ -216,7 +216,11 @@ class TasteProfileManager:
 
     def _load_or_create(self) -> dict:
         if self.profile_path.exists():
-            return json.loads(self.profile_path.read_text(encoding="utf-8"))
+            loaded = json.loads(self.profile_path.read_text(encoding="utf-8"))
+            normalized = self._normalize_profile(loaded)
+            if normalized != loaded:
+                self.profile_path.write_text(json.dumps(normalized, indent=2), encoding="utf-8")
+            return normalized
         profile = self._empty_profile()
         self.profile_path.write_text(json.dumps(profile, indent=2), encoding="utf-8")
         return profile
@@ -245,6 +249,35 @@ class TasteProfileManager:
             "sample_pack_scores": {},
             "pattern_scores": {stem: {} for stem in self.STEMS},
         }
+
+    def _normalize_profile(self, loaded: dict) -> dict:
+        profile = self._empty_profile()
+        if not isinstance(loaded, dict):
+            return profile
+
+        profile["version"] = loaded.get("version", profile["version"])
+        profile["history"] = loaded.get("history", []) if isinstance(loaded.get("history"), list) else []
+        profile["stats"] = self._normalize_stat_block(loaded.get("stats"))
+        profile["avoids"] = self._normalize_stat_block(loaded.get("avoids"))
+        return profile
+
+    def _normalize_stat_block(self, loaded: dict | None) -> dict:
+        template = self._empty_stat_block()
+        if not isinstance(loaded, dict):
+            return template
+
+        normalized = {}
+        for key, default_value in template.items():
+            value = loaded.get(key, default_value)
+            if key == "pattern_scores":
+                normalized[key] = {}
+                source_patterns = value if isinstance(value, dict) else {}
+                for stem in self.STEMS:
+                    stem_patterns = source_patterns.get(stem, {})
+                    normalized[key][stem] = stem_patterns if isinstance(stem_patterns, dict) else {}
+            else:
+                normalized[key] = value if isinstance(value, dict) else default_value
+        return normalized
 
     def _bump(self, mapping: dict[str, float], key: str, amount: float) -> None:
         mapping[key] = round(mapping.get(key, 0.0) + amount, 4)
