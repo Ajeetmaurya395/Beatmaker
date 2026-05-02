@@ -7,3 +7,4 @@ lightning-sdk
 instructor
 groq
 music21
+sentence-transformers

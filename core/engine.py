@@ -101,6 +101,7 @@ class BeatmakerEngine:
             taste_profile=self.taste_profile,
             taste_strength=taste_strength,
             reference_mode=reference_mode,
+            synth_presets=swarm_state.get("synth_presets"),
         )
         if pattern_hints is None:
             prompt_tags = self.pattern_library.extract_tags_from_text(prompt_for_spec)

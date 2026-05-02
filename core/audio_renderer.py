@@ -247,118 +247,115 @@ class AudioRenderer:
     def _poly_synth(self, event: NoteEvent, sample_count: int, spec: BeatSpec, index: int) -> array:
         freq = self._midi_to_hz(event.pitch)
         audio = array("f")
-        prompt = spec.prompt.lower()
         
-        # Adjective detection for dynamic synthesis tuning
-        is_bright = "bright" in prompt or "sharp" in prompt or "digital" in prompt
-        is_dark = "dark" in prompt or "warm" in prompt or "soft" in prompt or "muffled" in prompt
-        
-        is_acoustic = any(word in prompt for word in ("acoustic", "guitar", "piano", "pluck"))
-        is_lofi = any(word in prompt for word in ("lofi", "chill", "jazz", "rhodes"))
-        is_desi = any(word in prompt for word in ("bollywood", "hindi", "desi", "harmonium", "drone"))
-        is_hindi_indie = self._is_hindi_indie(spec)
+        preset = None
+        if spec.synth_presets and "chords" in spec.synth_presets:
+            preset = spec.synth_presets["chords"]
+
+        # Default fallback if no preset is provided
+        if not preset:
+            preset = {"wave": "sine", "attack": 0.05, "decay": 0.2, "sustain": 0.55, "release": 0.3, "tremolo": 0.0, "harmonics": 2, "detune": 0.005, "brightness": 0.5}
 
         for sample_idx in range(sample_count):
             t = sample_idx / self.SAMPLE_RATE
             
-            if is_hindi_indie:
-                # Warm nylon acoustic guitar
-                attack = 0.12 if is_dark else 0.03 if is_bright else 0.06
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, attack, 0.35, 0.55, 0.50)
+            env = self._adsr(t, sample_count / self.SAMPLE_RATE, preset["attack"], preset["decay"], preset["sustain"], preset["release"])
+            
+            # Tremolo
+            vib = 1.0
+            if preset.get("tremolo", 0.0) > 0:
+                vib = 1.0 - (preset["tremolo"] * math.sin(2 * math.pi * 4.0 * t))
+                
+            # Waveform generation
+            wave_type = preset.get("wave", "sine")
+            if wave_type == "sine":
                 fundamental = math.sin(2 * math.pi * freq * t)
-                h2 = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-5 * t) * (0.12 if is_bright else 0.18)
-                h3 = math.sin(2 * math.pi * freq * 3 * t) * math.exp(-8 * t) * (0.02 if is_dark else 0.06)
-                sample = (fundamental * 0.65 + h2 + h3) * env * 0.7
-            elif is_desi:
-                # Harmonium-style reed texture
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.08, 0.1, 0.8, 0.4)
-                # Reeds are square-ish
-                sig = 0.0
-                for i in (1, 2, 3): # odd harmonics
-                    sig += (math.sin(2 * math.pi * freq * i * t) / (i * 1.2))
-                # Soft tremolo for that hand-pumped feel
-                tremolo = 1.0 + 0.12 * math.sin(2 * math.pi * 3.5 * t)
-                sample = sig * env * tremolo * 0.5
-            elif is_acoustic:
-                # Warmer Piano/Acoustic — significantly softer than before
-                is_piano = "piano" in prompt
-                attack = 0.04 if is_piano else 0.08
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, attack, 0.45, 0.25, 0.4)
-                fundamental = math.sin(2 * math.pi * freq * t)
-                # Cap harmonics to 3 instead of 6 for a warmer, less 'buzzy' tone
-                harmonics = sum(math.sin(2 * math.pi * freq * i * t) / (i * 2) for i in range(2, 4)) * math.exp(-12 * t)
-                sample = (fundamental * 0.8 + harmonics * 0.2) * env * 0.75
-            elif is_lofi:
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.03, 0.3, 0.4, 0.4)
-                fundamental = math.sin(2 * math.pi * freq * t)
-                triangle = math.asin(math.sin(2 * math.pi * freq * t)) * (2.0 / math.pi)
-                tremolo = 1.0 - 0.15 * math.sin(2 * math.pi * 4.0 * t)
-                sample = (fundamental * 0.7 + triangle * 0.3) * env * tremolo * 0.6
+            elif wave_type == "square":
+                val = math.sin(2 * math.pi * freq * t)
+                fundamental = 0.6 if val >= 0 else -0.6
+            elif wave_type == "saw":
+                fundamental = 2.0 * ((freq * t) % 1.0) - 1.0
+            elif wave_type == "triangle":
+                fundamental = math.asin(math.sin(2 * math.pi * freq * t)) * (2.0 / math.pi)
             else:
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.05, 0.2, 0.55, 0.3)
-                detune1 = math.sin(2 * math.pi * (freq * 0.995) * t)
-                detune2 = math.sin(2 * math.pi * (freq * 1.005) * t)
-                sample = (math.sin(2 * math.pi * freq * t) * 0.5 + detune1 * 0.25 + detune2 * 0.25) * env * 0.5
-
+                fundamental = math.sin(2 * math.pi * freq * t)
+                
+            # Harmonics
+            harmonics = 0.0
+            num_harmonics = preset.get("harmonics", 0)
+            brightness = preset.get("brightness", 0.5)
+            if num_harmonics > 0:
+                for i in range(2, 2 + num_harmonics):
+                    harmonics += (math.sin(2 * math.pi * freq * i * t) / (i * (2.0 - brightness))) * math.exp(-5 * t)
+                    
+            # Detune
+            detune = 0.0
+            detune_amt = preset.get("detune", 0.0)
+            if detune_amt > 0:
+                detune1 = math.sin(2 * math.pi * (freq * (1.0 - detune_amt)) * t)
+                detune2 = math.sin(2 * math.pi * (freq * (1.0 + detune_amt)) * t)
+                detune = (detune1 + detune2) * 0.25
+                
+            sample = (fundamental * 0.6 + harmonics * 0.2 + detune) * env * vib * 0.7
             audio.append(sample)
+            
         return audio
 
     def _lead(self, event: NoteEvent, sample_count: int, spec: BeatSpec, index: int) -> array:
         freq = self._midi_to_hz(event.pitch)
         audio = array("f")
-        prompt = spec.prompt.lower()
         
-        is_shimmer = "shimmer" in prompt or "bright" in prompt or "digital" in prompt
-        is_drone = "drone" in prompt or "long" in prompt or "slow" in prompt
-        
-        is_acoustic = any(word in prompt for word in ("acoustic", "guitar", "piano", "pluck"))
-        is_lofi = any(word in prompt for word in ("lofi", "chill", "jazz", "rhodes"))
-        is_desi = any(word in prompt for word in ("bollywood", "hindi", "desi", "string", "jhankar"))
-        is_hindi_indie = self._is_hindi_indie(spec)
+        preset = None
+        if spec.synth_presets and "lead" in spec.synth_presets:
+            preset = spec.synth_presets["lead"]
+
+        # Default fallback if no preset is provided
+        if not preset:
+            preset = {"wave": "sine", "attack": 0.01, "decay": 0.10, "sustain": 0.48, "release": 0.14, "tremolo": 0.0, "harmonics": 1, "detune": 0.0, "brightness": 0.5}
 
         for sample_idx in range(sample_count):
             t = sample_idx / self.SAMPLE_RATE
             
-            if is_hindi_indie:
-                # Ultra-soft background pad
-                attack = 0.6 if is_drone else 0.25
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, attack, 0.3, 0.35, 0.6)
-                vib_freq = 0.5 if is_drone else 4.5 if is_shimmer else 2.0
-                vib = 1 + (0.003 * math.sin(2 * math.pi * vib_freq * t))
-                fundamental = math.sin(2 * math.pi * freq * vib * t)
-                if is_shimmer:
-                    # Add airy overtone
-                    fundamental += 0.05 * math.sin(2 * math.pi * freq * 4 * t)
-                sample = fundamental * env * 0.25
-            elif is_desi:
-                # Bollywood ensemble strings - rich and sweeping
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.12, 0.2, 0.85, 0.5)
-                vib = 1.0 + 0.012 * math.sin(2 * math.pi * 4.8 * t)
-                # Stacked saws for that orchestral texture
-                sample = 0.0
-                for detune in (0.994, 1.0, 1.006):
-                    wave_val = (freq * detune * vib * t) % 1.0
-                    sample += (wave_val * 2.0 - 1.0)
-                sample = (sample / 3.0) * env * 0.45
-            elif is_acoustic:
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.01, 0.2, 0.05, 0.2)
-                fundamental = math.sin(2 * math.pi * freq * t)
-                string_overtone = math.sin(2 * math.pi * freq * 2 * t) * math.exp(-20 * t)
-                sample = (fundamental * 0.7 + string_overtone * 0.3) * env
-            elif is_lofi:
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.08, 0.1, 0.6, 0.3)
-                vib = 1 + (0.015 * math.sin(2 * math.pi * 4.5 * t))
-                fundamental = math.sin(2 * math.pi * freq * vib * t)
-                sample = fundamental * env * 0.6
-            else:
-                vib = 1 + (0.012 * math.sin(2 * math.pi * 5.5 * t))
-                env = self._adsr(t, sample_count / self.SAMPLE_RATE, 0.01, 0.10, 0.48, 0.14)
-                fundamental = math.sin(2 * math.pi * freq * vib * t)
-                squareish = 0.35 if fundamental >= 0 else -0.35
-                overtone = math.sin(2 * math.pi * freq * 2 * vib * t) * 0.18
-                sample = (squareish + fundamental * 0.28 + overtone) * env
+            env = self._adsr(t, sample_count / self.SAMPLE_RATE, preset["attack"], preset["decay"], preset["sustain"], preset["release"])
             
+            # Tremolo/Vibrato
+            vib = 1.0
+            if preset.get("tremolo", 0.0) > 0:
+                vib = 1.0 + (preset["tremolo"] * math.sin(2 * math.pi * 5.5 * t))
+                
+            # Waveform generation
+            wave_type = preset.get("wave", "sine")
+            if wave_type == "sine":
+                fundamental = math.sin(2 * math.pi * freq * vib * t)
+            elif wave_type == "square":
+                val = math.sin(2 * math.pi * freq * vib * t)
+                fundamental = 0.6 if val >= 0 else -0.6
+            elif wave_type == "saw":
+                fundamental = 2.0 * ((freq * vib * t) % 1.0) - 1.0
+            elif wave_type == "triangle":
+                fundamental = math.asin(math.sin(2 * math.pi * freq * vib * t)) * (2.0 / math.pi)
+            else:
+                fundamental = math.sin(2 * math.pi * freq * vib * t)
+                
+            # Harmonics
+            harmonics = 0.0
+            num_harmonics = preset.get("harmonics", 0)
+            brightness = preset.get("brightness", 0.5)
+            if num_harmonics > 0:
+                for i in range(2, 2 + num_harmonics):
+                    harmonics += (math.sin(2 * math.pi * freq * vib * i * t) / (i * (2.0 - brightness))) * math.exp(-10 * t)
+                    
+            # Detune
+            detune = 0.0
+            detune_amt = preset.get("detune", 0.0)
+            if detune_amt > 0:
+                detune1 = math.sin(2 * math.pi * (freq * vib * (1.0 - detune_amt)) * t)
+                detune2 = math.sin(2 * math.pi * (freq * vib * (1.0 + detune_amt)) * t)
+                detune = (detune1 + detune2) * 0.25
+                
+            sample = (fundamental * 0.5 + harmonics * 0.3 + detune) * env * 0.8
             audio.append(sample)
+            
         return audio
 
     def _normalize(self, audio: array, ceiling: float) -> None:

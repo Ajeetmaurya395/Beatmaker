@@ -23,6 +23,7 @@ class BeatSpec:
     sections: list[Section]
     reference_summary: str | None = None
     learned_summary: str | None = None
+    synth_presets: dict[str, dict] | None = None
 
     @property
     def total_bars(self) -> int:
@@ -50,6 +51,7 @@ class BeatSpec:
             sections=sections,
             reference_summary=data.get("reference_summary"),
             learned_summary=data.get("learned_summary"),
+            synth_presets=data.get("synth_presets"),
         )
 
 

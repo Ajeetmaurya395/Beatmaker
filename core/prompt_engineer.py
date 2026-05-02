@@ -138,6 +138,7 @@ class PromptEngineer:
         taste_profile: TasteProfileManager | None = None,
         taste_strength: float = 0.35,
         reference_mode: str = "inspire",
+        synth_presets: dict[str, dict] | None = None,
     ) -> BeatSpec:
         prompt_lower = prompt.lower()
         stable_seed = (
@@ -201,6 +202,7 @@ class PromptEngineer:
             sections=sections,
             reference_summary=reference_profile.summary if reference_profile else None,
             learned_summary=learned_summary,
+            synth_presets=synth_presets,
         )
 
     def _detect_genre(

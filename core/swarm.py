@@ -24,6 +24,7 @@ from core.pattern_library import PatternLibraryManager
 from core.reference_analyzer import ReferenceProfile
 from core.taste_profile import TasteProfileManager
 from core.theory_validator import validate_chords
+from core.vector_library import SemanticPresetLibrary
 
 
 class MoodAnalysis(TypedDict):
@@ -50,6 +51,7 @@ class MusicState(TypedDict, total=False):
     critic_feedback: str
     approved: bool
     retry_count: int
+    synth_presets: dict[str, dict]
 
 
 class DrumPatternBlueprint(BaseModel):
@@ -331,6 +333,27 @@ Mood Arousal: {mood.get('arousal', 0.5)}
 
         state["sample_pack_genre"] = sample_pack_genre
         state["sample_traits"] = sorted(traits)
+        
+        # 1. Semantic Search for Synth Presets
+        preset_lib = SemanticPresetLibrary()
+        mood_str = "dark moody" if mood.get("valence", 0.5) < 0.5 else "bright happy"
+        energy_str = "aggressive loud" if mood.get("arousal", 0.5) > 0.6 else "soft chill"
+        chords_query = f"{genre} {mood_str} {energy_str} chords piano synth {state.get('prompt', '')}"
+        lead_query = f"{genre} {mood_str} {energy_str} lead melody pad {state.get('prompt', '')}"
+        
+        chords_preset = preset_lib.search(chords_query, top_k=1)[0]
+        lead_preset = preset_lib.search(lead_query, top_k=1)[0]
+        
+        if lead_preset["id"] == chords_preset["id"]:
+            lead_fallback = preset_lib.search(lead_query, top_k=2)
+            if len(lead_fallback) > 1:
+                lead_preset = lead_fallback[1]
+
+        state["synth_presets"] = {
+            "chords": chords_preset["params"],
+            "lead": lead_preset["params"]
+        }
+        
         return state
 
     def _critic_node(self, state: MusicState) -> MusicState:
